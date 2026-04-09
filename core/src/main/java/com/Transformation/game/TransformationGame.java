@@ -34,6 +34,7 @@ public class TransformationGame extends ApplicationAdapter {
 
     @Override
     public void render() {
+        //part of initial map setup
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
         camera.update();
         renderer.setView(camera);
