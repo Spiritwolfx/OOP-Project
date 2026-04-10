@@ -1,6 +1,7 @@
 package com.Transformation.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -58,6 +59,8 @@ public class TransformationGame extends ApplicationAdapter {
 
     @Override
     public void render() {
+        float delta = Gdx.graphics.getDeltaTime();
+        myPlayer.update(delta, myPhysics);
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
 
         renderer.setView(camera);
@@ -88,7 +91,7 @@ public class TransformationGame extends ApplicationAdapter {
         map = new TmxMapLoader().load(mapPath);
 
         //creating our player
-        Texture playerTex = new Texture("bf2d5883-fb3a-4d5c-a111-baf209c89794.jpg");
+        Texture playerTex = new Texture("ghost2.png");
         myPlayer = new Player(playerTex, 0, 0);
 
         // Use point object instead of rectangle
