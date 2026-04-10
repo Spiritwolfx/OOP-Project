@@ -2,6 +2,7 @@ package com.Transformation.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -61,6 +62,8 @@ public class TransformationGame extends ApplicationAdapter {
     public void render() {
         float delta = Gdx.graphics.getDeltaTime();
         myPlayer.update(delta, myPhysics);
+
+
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
 
         renderer.setView(camera);
@@ -153,7 +156,7 @@ public class TransformationGame extends ApplicationAdapter {
     private void showJbumpWorld() {
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(com.badlogic.gdx.graphics.Color.GREEN); //using green for physics world
+        shapeRenderer.setColor(Color.GREEN); //using green for physics world
 
         //getting all items currently in the jbump world
         Set<Item> items = myPhysics.world.getItems();
@@ -163,6 +166,12 @@ public class TransformationGame extends ApplicationAdapter {
             Rect rect = myPhysics.world.getRect(item);
 
             //rendering the object
+            if (!(item.userData.equals("wall")) && !(item.userData.equals("Player"))) {
+                shapeRenderer.setColor(Color.RED); //using red for transformables
+                shapeRenderer.rect(rect.x, rect.y, rect.w, rect.h);
+                shapeRenderer.setColor(Color.GREEN);
+                continue;
+            }
             shapeRenderer.rect(rect.x, rect.y, rect.w, rect.h);
         }
 

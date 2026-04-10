@@ -10,8 +10,7 @@ import com.dongbat.jbump.Response;
 
 public class Player {
 
-    //For shivam: edit this class for your logic, the texture is how you look
-    //physics will handle the hitbox changes
+
     public Sprite sprite;
 
     // velocity variables
@@ -57,7 +56,7 @@ public class Player {
             hitbox,
             x + velX * delta,  // where you WANT to go
             y + velY * delta,
-            (item, other) -> Response.slide  // slide along walls
+            physics.heistFilter  // using our custom collisionFilter (see definition)
         );
 
         // update position to where jbump allowed us to go
