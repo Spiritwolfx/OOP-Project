@@ -9,7 +9,8 @@ import com.dongbat.jbump.Item;
 import com.dongbat.jbump.Response;
 
 public class Player {
-
+    //current form of the player, object to store the weight and velocity
+    MimicForm currForm;
 
     public Sprite sprite;
 
@@ -30,6 +31,7 @@ public class Player {
     //constructor (texture is our player image)
     public Player(Texture texture, float startX, float startY) {
         this.sprite = new Sprite(texture);
+        this.currForm = new BaseForm();
         this.sprite.setSize(128, 128);
         this.x = startX;
         this.y = startY;
@@ -37,18 +39,37 @@ public class Player {
         this.hitbox = new Item<>("Player");
     }
 
+    public void changeForm(String formName) {
+        this.currForm = FormFactory.get(formName);
+        this.currForm.onTransform(this);
+
+//        System.out.println("Pressed");
+
+        // swap the sprite texture to match the new form
+        Texture newTex = new Texture(currForm.textureName);
+        sprite.setTexture(newTex);
+    }
+
     public void update(float delta, Physics physics) {
         // x-axis movement
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) velX = -200f;
-        else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) velX = 200f;
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) velX = -currForm.speed;
+        else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) velX = currForm.speed;
         else velX = 0; // no key = stop immediately
 
         // gravity — pulls player down every frame
-        velY -= 600f * delta;
+        velY -= currForm.weight * delta;
 
         // jump — fires once per tap, not held
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && isGrounded) {
             velY = 400f;
+        }
+
+        // transform — press E near a transformable object
+        if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
+            String formName = physics.getNearbyTransformable(x, y, getWidth(), getHeight());
+            if (formName != null) {
+                changeForm(formName);
+            }
         }
 
         // jbump handles collision — moves player to where it's allowed to go
@@ -73,6 +94,8 @@ public class Player {
                 velY = 0; // stop falling
             }
         }
+
+
     }
 
     /** use in render() to draw our player */
