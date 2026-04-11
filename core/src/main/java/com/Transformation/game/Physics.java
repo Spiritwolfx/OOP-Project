@@ -36,6 +36,15 @@ public class Physics {
             myPlayer.getWidth(),myPlayer.getHeight());
     }
 
+    /** to update hitbox to sprite size when player transforms */
+    public void updateHitboxSize(Player myPlayer) {
+        // remove the old hitbox
+        world.remove(myPlayer.hitbox);
+
+        // add the hitbox with new dimensions
+        world.add(myPlayer.hitbox, myPlayer.x, myPlayer.y, myPlayer.getWidth(), myPlayer.getHeight());
+    }
+
     /** gets all the collidable objects from our object layer*/
     public void loadWalls(TiledMap map) {
         //getting all objects from the object layer 1
