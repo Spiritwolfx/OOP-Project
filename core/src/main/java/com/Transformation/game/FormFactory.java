@@ -9,8 +9,10 @@ public class FormFactory {
 
     static {
         // register your forms here as you add them
-        registry.put("BaseForm", () -> new BaseForm());
-//        registry.put("TestForm", () -> new TestForm()); // random testForm for checking
+        registry.put("BaseForm",
+            () -> new BaseForm());
+        registry.put("Box",
+            () -> new TestForm()); // random testForm for checking
     }
 
     public static MimicForm get(String formName) {

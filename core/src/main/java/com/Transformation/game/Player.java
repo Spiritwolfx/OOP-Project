@@ -39,11 +39,12 @@ public class Player {
         this.hitbox = new Item<>("Player");
     }
 
-    public void changeForm(String formName) {
+    public void changeForm(String formName, Physics physics) {
         this.currForm = FormFactory.get(formName);
         this.currForm.onTransform(this);
 
-//        System.out.println("Pressed");
+        // update the hitbox of the new form
+        physics.updateHitboxSize(this);
 
         // swap the sprite texture to match the new form
         Texture newTex = new Texture(currForm.textureName);
@@ -67,8 +68,14 @@ public class Player {
         // transform — press E near a transformable object
         if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
             String formName = physics.getNearbyTransformable(x, y, getWidth(), getHeight());
-            if (formName != null) {
-                changeForm(formName);
+            System.out.println("Form Name:" + formName);
+            if (!currForm.formName.equals("BaseForm") && formName == null) {
+                // if player is not in baseForm then change to baseForm
+                changeForm("BaseForm", physics);
+            }
+            else if (formName != null) {
+                // else put player in nearest transformable form
+                changeForm(formName, physics);
             }
         }
 

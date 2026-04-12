@@ -2,8 +2,9 @@ package com.Transformation.game;
 
 public class TestForm extends MimicForm{
     public TestForm() {
-        this.speed = 300f;
-        this.weight = 1000f;
+        this.formName = "Box";
+        this.speed = 400f;
+        this.weight = 700f;
         this.textureName = "ghost2.png"; // default player sprite
     }
 
