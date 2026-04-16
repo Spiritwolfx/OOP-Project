@@ -21,10 +21,14 @@ public class Physics {
             // If it's not a wall, then it is a transformable (as we are the player, cannot collide with ourselves)
             if (other.userData.equals("wall")) return Response.slide;
 
-            //ignoring transformables
-            return null;
+            //ignoring transformables if we are ghost (BaseForm)
+            if (item.userData.equals("BaseForm"))
+                return null;
+
+            return Response.slide;
         }
     };
+
 
     //constructor
     public Physics(Player myPlayer, TiledMap map){
@@ -70,8 +74,8 @@ public class Physics {
     }
 
     public void loadTransformables(TiledMap map){
-        MapLayer collisionLayer = map.getLayers().get("transformables");
-        MapObjects objects = collisionLayer.getObjects();
+        MapLayer transformablesLayer = map.getLayers().get("transformables");
+        MapObjects objects = transformablesLayer.getObjects();
 
         //looping through all the objects and adding to jbump
         for (MapObject object : objects) {
@@ -86,14 +90,14 @@ public class Physics {
         }
     }
 
-    public String getNearbyTransformable(float playerX, float playerY, float playerW, float playerH) {
+    public String getNearbyTransformable(Player player) {
         // adding extra range around the player to make the search area
         float range = 25f;
 
-        float searchX = playerX - range;
-        float searchY = playerY - range;
-        float searchW = playerW + (range * 2);
-        float searchH = playerH + (range * 2);
+        float searchX = player.x - range;
+        float searchY = player.y - range;
+        float searchW = player.getWidth() + (range * 2);
+        float searchH = player.getHeight() + (range * 2);
 
         ArrayList<Item> items = new ArrayList<>();
         //creating a list of all rectangles in the search area
@@ -103,12 +107,12 @@ public class Physics {
         float minDistanceSq = Float.MAX_VALUE; // assigning highest value possible to minimum distance (squared)
 
         // getting the center of the player
-        float playerCenterX = playerX + (playerW / 2);
-        float playerCenterY = playerY + (playerH / 2);
+        float playerCenterX = player.x + (player.getWidth() / 2);
+        float playerCenterY = player.y + (player.getHeight() / 2);
 
         for (Item item : items) {
             // filtering out the walls and the player itself
-            if (!(item.userData.equals("wall")) && !(item.userData.equals("Player"))) {
+            if (!(item.userData.equals("wall")) && !(item.userData.equals(player.currForm.formName))) {
 
                 // getting the rectangle of the item we got from our world.queryRect
                 Rect rect = world.getRect(item);

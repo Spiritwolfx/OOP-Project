@@ -4,7 +4,6 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.MapLayer;
@@ -94,8 +93,7 @@ public class TransformationGame extends ApplicationAdapter {
         map = new TmxMapLoader().load(mapPath);
 
         //creating our player
-        Texture playerTex = new Texture("ghost2.png");
-        myPlayer = new Player(playerTex, 0, 0);
+        myPlayer = new Player(0, 0);
 
         // Use point object instead of rectangle
         //int mapRows = map.getProperties().get("height", Integer.class);
@@ -114,6 +112,7 @@ public class TransformationGame extends ApplicationAdapter {
 
         //creating our physics engine object
         myPhysics = new Physics(myPlayer, map);
+
     }
 
     /** to view tiled rectangles */
@@ -166,7 +165,7 @@ public class TransformationGame extends ApplicationAdapter {
             Rect rect = myPhysics.world.getRect(item);
 
             //rendering the object
-            if (!(item.userData.equals("wall")) && !(item.userData.equals("Player"))) {
+            if (!(item.userData.equals("wall")) && !(item.userData.equals("BaseForm"))) {
                 shapeRenderer.setColor(Color.RED); //using red for transformables
                 shapeRenderer.rect(rect.x, rect.y, rect.w, rect.h);
                 shapeRenderer.setColor(Color.GREEN);

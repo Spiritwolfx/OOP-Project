@@ -29,14 +29,14 @@ public class Player {
     public boolean isGrounded = false;
 
     //constructor (texture is our player image)
-    public Player(Texture texture, float startX, float startY) {
-        this.sprite = new Sprite(texture);
+    public Player(float startX, float startY) {
         this.currForm = new BaseForm();
+        this.sprite = new Sprite(new Texture(this.currForm.textureName));
         this.sprite.setSize(128, 128);
         this.x = startX;
         this.y = startY;
         this.sprite.setPosition(this.x, this.y);
-        this.hitbox = new Item<>("Player");
+        this.hitbox = new Item<>(this.currForm.formName);
     }
 
     public void changeForm(String formName, Physics physics) {
@@ -67,7 +67,7 @@ public class Player {
 
         // transform — press E near a transformable object
         if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
-            String formName = physics.getNearbyTransformable(x, y, getWidth(), getHeight());
+            String formName = physics.getNearbyTransformable(this);
             System.out.println("Form Name:" + formName);
             if (!currForm.formName.equals("BaseForm") && formName == null) {
                 // if player is not in baseForm then change to baseForm
