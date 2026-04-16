@@ -107,7 +107,8 @@ public class Player {
 
     /** use in render() to draw our player */
     public void draw(SpriteBatch batch) {
-        sprite.draw(batch);
+        if (this.currForm.formName.equals("BaseForm"))
+            sprite.draw(batch);
     }
 
     public float getWidth() {
