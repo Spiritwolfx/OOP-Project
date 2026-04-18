@@ -1,4 +1,6 @@
-package com.Transformation.game;
+package com.Transformation.game.Forms;
+
+import com.Transformation.game.Player;
 
 public abstract class MimicForm {
     public float speed;

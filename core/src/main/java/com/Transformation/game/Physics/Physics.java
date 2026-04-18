@@ -1,5 +1,6 @@
-package com.Transformation.game;
+package com.Transformation.game.Physics;
 
+import com.Transformation.game.Player;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
@@ -24,6 +25,9 @@ public class Physics {
             //ignoring transformables if we are ghost (BaseForm)
             if (item.userData.equals("BaseForm"))
                 return null;
+
+            if (other.userData.equals("BaseForm"))
+                return Response.cross;
 
             return Response.slide;
         }
@@ -77,17 +81,24 @@ public class Physics {
         MapLayer transformablesLayer = map.getLayers().get("transformables");
         MapObjects objects = transformablesLayer.getObjects();
 
+        //list to store needed transformable objects
+        ArrayList<PropInstance> neededObjects = new ArrayList<>();
+        String formName;
+
         //looping through all the objects and adding to jbump
         for (MapObject object : objects) {
             if (object instanceof RectangleMapObject) {
 
                 Rectangle rect = ((RectangleMapObject) object).getRectangle();
-                //getting and placing the formName from Tiled rectangle to our Item
 
-                world.add(new Item<>(object.getProperties().get("formName",String.class)), rect.x, rect.y, rect.width, rect.height);
+                //getting and placing the formName from Tiled rectangle to our jbump Item and needObjects list
+                formName = object.getProperties().get("formName",String.class);
+                neededObjects.add(new PropInstance(formName,rect.x,rect.y,rect.width,rect.height));
+                world.add(new Item<>(formName), rect.x, rect.y, rect.width, rect.height);
 
             }
         }
+        //FormFactory.loadLevelRegistry(neededObjects);
     }
 
     public String getNearbyTransformable(Player player) {

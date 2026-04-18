@@ -1,11 +1,13 @@
-package com.Transformation.game;
+package com.Transformation.game.Forms;
+
+import com.Transformation.game.Player;
 
 public class BaseForm extends MimicForm {
     public BaseForm() {
         this.formName = "BaseForm";
         this.speed = 200f;
         this.weight = 1000f;
-        this.textureName = "ghost2.png"; // default player sprite
+        this.textureName = "ghost2cropped.png"; // default player sprite
     }
 
     @Override

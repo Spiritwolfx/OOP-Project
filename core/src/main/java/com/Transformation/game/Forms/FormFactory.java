@@ -1,4 +1,4 @@
-package com.Transformation.game;
+package com.Transformation.game.Forms;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 
 public class FormFactory {
     private static final Map<String, Supplier<MimicForm>> registry = new HashMap<>();
+
 
     static {
         // register your forms here as you add them

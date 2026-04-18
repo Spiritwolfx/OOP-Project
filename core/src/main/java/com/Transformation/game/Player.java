@@ -1,5 +1,9 @@
 package com.Transformation.game;
 
+import com.Transformation.game.Forms.BaseForm;
+import com.Transformation.game.Forms.FormFactory;
+import com.Transformation.game.Forms.MimicForm;
+import com.Transformation.game.Physics.Physics;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
@@ -10,7 +14,7 @@ import com.dongbat.jbump.Response;
 
 public class Player {
     //current form of the player, object to store the weight and velocity
-    MimicForm currForm;
+    public MimicForm currForm;
 
     public Sprite sprite;
 
@@ -32,7 +36,7 @@ public class Player {
     public Player(float startX, float startY) {
         this.currForm = new BaseForm();
         this.sprite = new Sprite(new Texture(this.currForm.textureName));
-        this.sprite.setSize(128, 128);
+        this.sprite.setSize(64, 64);
         this.x = startX;
         this.y = startY;
         this.sprite.setPosition(this.x, this.y);
