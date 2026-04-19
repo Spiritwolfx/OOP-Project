@@ -59,7 +59,11 @@ public class Physics {
 
     /** swaps hitbox of player to the currentForm's hitbox*/
     public void updateHitbox(Player myPlayer) {
-        myPlayer.hitbox = HitboxFactory.getHitbox(myPlayer.currForm.formName);
+        Item<String> nextHitbox = HitboxFactory.getHitbox(myPlayer.currForm.formName);
+
+        world.update(nextHitbox, myPlayer.x, myPlayer.y); // bringing the new hitbox to our location
+
+        myPlayer.hitbox = nextHitbox;
     }
 
     /** gets all the collidable objects from our object layer*/
