@@ -50,22 +50,23 @@ public class Player {
             this.currForm.y = this.y;
             this.sprite.setPosition(this.x, this.y);
 
-            //put the box back in jbump at its new position
-            physics.world.add(
-                new Item<>(this.currForm.formName),
-                this.currForm.x,
-                this.currForm.y,
-                this.currForm.width,
-                this.currForm.height
-            );
-        } else {
-            // remove static box from jbump — player becomes the box
-            physics.removeTransformable(formName);
+
+//            //put the box back in jbump at its new position
+//            physics.world.add(
+//                new Item<>(this.currForm.formName),
+//                this.currForm.x,
+//                this.currForm.y,
+//                this.currForm.width,
+//                this.currForm.height
+//            );
+//        } else {
+//            // remove static box from jbump — player becomes the box
+//            physics.removeTransformable(formName);
         }
 
         this.currForm = FormFactory.get(formName);
         this.currForm.onTransform(this);
-        physics.updateHitboxSize(this);
+        physics.updateHitbox(this);
 
         Texture newTex = new Texture(currForm.textureName);
         sprite.setTexture(newTex);

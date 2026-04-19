@@ -28,7 +28,7 @@ public class Physics {
                 return null;
 
             if (other.userData.equals("BaseForm"))
-                return Response.cross;
+                return null;
 
             return Response.slide;
         }
@@ -43,6 +43,9 @@ public class Physics {
         //adding our player hitbox to our jbump world
         world.add(myPlayer.hitbox, myPlayer.x, myPlayer.y,
             myPlayer.getWidth(),myPlayer.getHeight());
+
+        //adding player's hitbox (which is currently BaseForm) to HitboxFactory
+        HitboxFactory.loadIndividualHitbox(myPlayer.hitbox);
     }
 
     /** to update hitbox to sprite size when player transforms */
@@ -52,6 +55,11 @@ public class Physics {
 
         // add the hitbox with new dimensions
         world.add(myPlayer.hitbox, myPlayer.x, myPlayer.y, myPlayer.getWidth(), myPlayer.getHeight());
+    }
+
+    /** swaps hitbox of player to the currentForm's hitbox*/
+    public void updateHitbox(Player myPlayer) {
+        myPlayer.hitbox = HitboxFactory.getHitbox(myPlayer.currForm.formName);
     }
 
     /** gets all the collidable objects from our object layer*/
@@ -82,9 +90,14 @@ public class Physics {
         MapLayer transformablesLayer = map.getLayers().get("transformables");
         MapObjects objects = transformablesLayer.getObjects();
 
-        //list to store needed transformable objects
+        //list to store needed transformable objects (sent to FormFactory)
         ArrayList<PropInstance> neededObjects = new ArrayList<>();
+
+        //list to store the hitboxes for all the transformables (sent to HotboxFactory)
+        ArrayList<Item<String>> hitboxes = new ArrayList<>();
+
         String formName;
+        Item<String> newHitbox;
 
         //looping through all the objects and adding to jbump
         for (MapObject object : objects) {
@@ -92,14 +105,25 @@ public class Physics {
 
                 Rectangle rect = ((RectangleMapObject) object).getRectangle();
 
-                //getting and placing the formName from Tiled rectangle to our jbump Item and needObjects list
+                //getting the formName from Tiled rectangle
                 formName = object.getProperties().get("formName",String.class);
-                neededObjects.add(new PropInstance(formName,rect.x,rect.y,rect.width,rect.height));
-                world.add(new Item<>(formName), rect.x, rect.y, rect.width, rect.height);
 
+                //adding the new transformable to our needed objects list using PropInstance helping class
+                neededObjects.add(new PropInstance(formName,rect.x,rect.y,rect.width,rect.height));
+
+                newHitbox = new Item<>(formName);
+
+                //finally, adding our new hitbox to out jbump world
+                world.add(newHitbox, rect.x, rect.y, rect.width, rect.height);
+
+                //adding the new hitbox to hitboxes list which is then sent to HitboxFactory
+                hitboxes.add(newHitbox);
             }
         }
+
+        //loading all transformables and their hitboxes in their respective factories (registries)
         FormFactory.loadLevelRegistry(neededObjects);
+        HitboxFactory.loadHitboxes(hitboxes);
     }
 
     public String getNearbyTransformable(Player player) {
