@@ -61,9 +61,13 @@ public class Physics {
     public void updateHitbox(Player myPlayer) {
         Item<String> nextHitbox = HitboxFactory.getHitbox(myPlayer.currForm.formName);
 
-        world.update(nextHitbox, myPlayer.x, myPlayer.y); // bringing the new hitbox to our location
+        if (nextHitbox != null) {
+            if (nextHitbox.userData.equals("BaseForm"))
+                world.update(nextHitbox, myPlayer.x, myPlayer.y); // bringing the baseForm's hitbox to our location
 
-        myPlayer.hitbox = nextHitbox;
+            myPlayer.hitbox = nextHitbox;
+        }
+        else System.out.println("No next Hitbox!!!!!!!");
     }
 
     /** gets all the collidable objects from our object layer*/
