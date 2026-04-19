@@ -49,7 +49,11 @@ public class Player {
             this.currForm.x = this.x;
             this.currForm.y = this.y;
             this.sprite.setPosition(this.x, this.y);
-
+        } else {
+            MimicForm targetForm = FormFactory.get(formName);
+            this.x = targetForm.x;
+            this.y = targetForm.y;
+            this.sprite.setPosition(this.x, this.y);
 
 //            //put the box back in jbump at its new position
 //            physics.world.add(
@@ -70,6 +74,7 @@ public class Player {
 
         Texture newTex = new Texture(currForm.textureName);
         sprite.setTexture(newTex);
+//        sprite.setSize(currForm.width, currForm.height); // match sprite size to form
     }
 
     public void update(float delta, Physics physics) {
