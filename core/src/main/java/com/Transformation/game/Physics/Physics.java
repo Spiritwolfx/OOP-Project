@@ -1,5 +1,6 @@
 package com.Transformation.game.Physics;
 
+import com.Transformation.game.Forms.FormFactory;
 import com.Transformation.game.Player;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
@@ -98,7 +99,7 @@ public class Physics {
 
             }
         }
-        //FormFactory.loadLevelRegistry(neededObjects);
+        FormFactory.loadLevelRegistry(neededObjects);
     }
 
     public String getNearbyTransformable(Player player) {
@@ -146,5 +147,14 @@ public class Physics {
         }
 
         return closestForm; // Returns the nearest string, or null if nothing was found
+    }
+    public void removeTransformable(String formName) {
+        //find and remove the static prop from jbump world
+        for (Item item : world.getItems()) {
+            if (item.userData.equals(formName)) {
+                world.remove(item);
+                return;
+            }
+        }
     }
 }

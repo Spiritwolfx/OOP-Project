@@ -44,28 +44,44 @@ public class Player {
     }
 
     public void changeForm(String formName, Physics physics) {
+        //if untransforming, move ghost to where the form was
+        if (formName.equals("BaseForm")) {
+            this.currForm.x = this.x;
+            this.currForm.y = this.y;
+            this.sprite.setPosition(this.x, this.y);
+
+            //put the box back in jbump at its new position
+            physics.world.add(
+                new Item<>(this.currForm.formName),
+                this.currForm.x,
+                this.currForm.y,
+                this.currForm.width,
+                this.currForm.height
+            );
+        } else {
+            // remove static box from jbump — player becomes the box
+            physics.removeTransformable(formName);
+        }
+
         this.currForm = FormFactory.get(formName);
         this.currForm.onTransform(this);
-
-        // update the hitbox of the new form
         physics.updateHitboxSize(this);
 
-        // swap the sprite texture to match the new form
         Texture newTex = new Texture(currForm.textureName);
         sprite.setTexture(newTex);
     }
 
     public void update(float delta, Physics physics) {
         // x-axis movement
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) velX = -currForm.speed;
-        else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) velX = currForm.speed;
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)) velX = -currForm.speed;
+        else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)|| Gdx.input.isKeyPressed(Input.Keys.D)) velX = currForm.speed;
         else velX = 0; // no key = stop immediately
 
         // gravity — pulls player down every frame
         velY -= currForm.weight * delta;
 
         // jump — fires once per tap, not held
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && isGrounded) {
+        if ((Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isKeyJustPressed(Input.Keys.UP) || Gdx.input.isKeyJustPressed(Input.Keys.W)) && isGrounded) {
             velY = 400f;
         }
 
@@ -111,8 +127,8 @@ public class Player {
 
     /** use in render() to draw our player */
     public void draw(SpriteBatch batch) {
-        if (this.currForm.formName.equals("BaseForm"))
-            sprite.draw(batch);
+//        if (this.currForm.formName.equals("BaseForm"))
+        sprite.draw(batch);
     }
 
     public float getWidth() {

@@ -7,6 +7,7 @@ public abstract class MimicForm {
     public float weight;
     public String formName; //name of the form e.g. "Box"
     public String textureName; //filename of the sprite e.g. "ghost2.png"
+    public float x, y, width, height; //details of the form when changing forms
 
     //each form must define what happens when you transform into it
     public abstract void onTransform(Player player);
