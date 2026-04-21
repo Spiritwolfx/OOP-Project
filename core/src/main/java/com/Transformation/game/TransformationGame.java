@@ -1,5 +1,6 @@
 package com.Transformation.game;
 
+import com.Transformation.game.Animations.NPC;
 import com.Transformation.game.Physics.Physics;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -35,15 +36,14 @@ public class TransformationGame extends ApplicationAdapter {
     private Physics myPhysics;
     private Player myPlayer;
     private ShapeRenderer shapeRenderer;
-
-
+    private NPC npc;
     @Override
     public void create() {
         batch = new SpriteBatch();
 
         camera = new OrthographicCamera();
 
-        loadLevel("Test Map.tmx");
+        loadLevel("Assets/Assets/game_level_1.tmx");
 
         //calculating map size
         float mapWidth = map.getProperties().get("width", Integer.class) * map.getProperties().get("tilewidth", Integer.class);
@@ -65,7 +65,7 @@ public class TransformationGame extends ApplicationAdapter {
     public void render() {
         float delta = Gdx.graphics.getDeltaTime();
         myPlayer.update(delta, myPhysics);
-
+        npc.update(delta);
 
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
 
@@ -75,6 +75,7 @@ public class TransformationGame extends ApplicationAdapter {
         batch.setProjectionMatrix(camera.combined);
         renderMap();
         batch.begin();
+        npc.draw(batch);
         myPlayer.draw(batch);
         batch.end();
 
@@ -113,7 +114,14 @@ public class TransformationGame extends ApplicationAdapter {
 
         myPlayer.x = spawnX;
         myPlayer.y = spawnY;
-        myPlayer.sprite.setPosition(myPlayer.x, myPlayer.y);
+
+        //placing our npc at the NPC spawn point
+        spawn = map.getLayers().get("NPC").getObjects().get(0);
+        spawnX = spawn.getProperties().get("x", Float.class);
+        spawnY = spawn.getProperties().get("y", Float.class);
+        npc = new NPC(spawnX,spawnY,"LeftWalk.png","LeftIdle.png");
+
+
 
         //creating our physics engine object
         myPhysics = new Physics(myPlayer, map);

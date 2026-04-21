@@ -18,6 +18,12 @@
  <tileset firstgid="7106" source="../tilesets/table_rect_0.tsx"/>
  <tileset firstgid="7107" source="../tilesets/chair.tsx"/>
  <tileset firstgid="7108" source="../tilesets/interiors_demo.tsx"/>
+ <tileset firstgid="7133" name="shelves_3" tilewidth="96" tileheight="64" tilecount="1" columns="0">
+  <grid orientation="orthogonal" width="1" height="1"/>
+  <tile id="1">
+   <image source="shelves_3.png" width="96" height="64"/>
+  </tile>
+ </tileset>
  <layer id="1" name="Walls" width="60" height="40" locked="1">
   <data encoding="base64" compression="zlib">
    eJzt1uENhSAMBGCYw21MZBQndCZdQ/2PFCKlDXdfYuI9Y1JfKSEELFu0rmAstO/dI1YmmknL+reevdpcqploJiNmyGMmDMdiXYGud11bzxJnl8iH87ku6yKIQKxgmWgmqZCT8Lx37n2fqx/NyP5J+ev+T2Z/5801+w8aT/0ZkdFo7LfWPSzt+715Wz+5/0K6pPdLv2tn7Xn11j+Jxvmn5lzbs4aWc9kNhBBCjg==
