@@ -35,13 +35,15 @@ public class TransformationGame extends ApplicationAdapter {
     private Physics myPhysics;
     private Player myPlayer;
     private ShapeRenderer shapeRenderer;
+
+
     @Override
     public void create() {
         batch = new SpriteBatch();
 
         camera = new OrthographicCamera();
 
-        loadLevel("Assets/Assets/game.tmx");
+        loadLevel("Assets/Assets/game_level_1.tmx");
 
         //calculating map size
         float mapWidth = map.getProperties().get("width", Integer.class) * map.getProperties().get("tilewidth", Integer.class);

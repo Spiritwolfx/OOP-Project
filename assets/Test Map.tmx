@@ -30,7 +30,7 @@
 14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14
 </data>
  </layer>
- <objectgroup id="2" name="Object Layer 1">
+ <objectgroup id="2" name="Collision Layer" visible="0">
   <object id="1" name="wall" type="wall" x="386.21" y="384.559" width="90.8412" height="29.1763">
    <properties>
     <property name="collidable" type="bool" value="true"/>
@@ -44,14 +44,14 @@
   <object id="13" name="left wall" x="0" y="0" width="32" height="640"/>
   <object id="14" name="right wall" x="928" y="0" width="32" height="640"/>
  </objectgroup>
- <objectgroup id="4" name="transformables">
+ <objectgroup id="4" name="Transformables" visible="0">
   <object id="15" x="448" y="192" width="256" height="128">
    <properties>
     <property name="formName" value="Box"/>
    </properties>
   </object>
  </objectgroup>
- <objectgroup id="3" name="spawn">
+ <objectgroup id="3" name="spawn" visible="0">
   <object id="10" x="192" y="416">
    <point/>
   </object>

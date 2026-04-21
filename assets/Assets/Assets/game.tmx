@@ -71,13 +71,13 @@
    eJzl2rdNAwEYxXHEABSks11QMAAFA1CYnEzO2WSDTbIJJicDJicTBqBgAAoGYAAKBqBgAApq/p9uB7t4n/Tr70k+Pb2T/XlZWeWoQCWqUI0a1KIO9WhAIwJoQjNa0Io2tKMDnehCN3rQiz70YwCDGMIwRhDEKMYwjglMYgrTCGEGswgjgjnMYwGLWEIUMSxjBatYQxzr2MAmtqBylvVdKK9l/RPKa1lL8zP9FOk7yxoRymtZX4XyWtYfobx+3t/igkw/RfrO+mhQKK/10bNQXuujL6G81ke5hZl+ivSd9VFAKK/1UVIor3Xvh1Be616/0F6w7lXav9a9SvvXuldp/1r32m96CMMYQRCjGMM4JjCJKUwjhBnMIowI5jCPBSxiCVHEsIwVrGINcaxjA5v2PmEbO9jFHvZxgEMkcIRjnCCJU5zhHBe4xBWucYNb3OEeKTzgEU8FWvvXuldp/1r3Ku3fbEdr/5Y5Wvs37mjt3zdHa//+Olr7t8SjtX9DHq39++LR2r/fHreDVa7I63awyvV63Q5WuZTX7WCV+/S6HaxyOT63g1Wuzud2sMolfO73WKX/I/0DBSWDcw==
   </data>
  </layer>
- <objectgroup id="6" name="Collision Layer">
+ <objectgroup id="6" name="Collision Layer" visible="0">
   <object id="72" x="0" y="-32" width="960" height="48"/>
   <object id="74" x="-16" y="0" width="32" height="640"/>
   <object id="75" x="16" y="576" width="928" height="64"/>
   <object id="76" x="944" y="0" width="16" height="624"/>
  </objectgroup>
- <objectgroup id="17" name="spawn">
+ <objectgroup id="17" name="spawn" visible="0">
   <object id="71" x="512" y="576">
    <point/>
   </object>
