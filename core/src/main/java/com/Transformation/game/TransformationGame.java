@@ -43,7 +43,7 @@ public class TransformationGame extends ApplicationAdapter {
 
         camera = new OrthographicCamera();
 
-        loadLevel("Assets/Assets/game_level_1.tmx");
+        loadLevel("Test Map.tmx");
 
         //calculating map size
         float mapWidth = map.getProperties().get("width", Integer.class) * map.getProperties().get("tilewidth", Integer.class);
@@ -117,10 +117,6 @@ public class TransformationGame extends ApplicationAdapter {
 
         //creating our physics engine object
         myPhysics = new Physics(myPlayer, map);
-
-        //loading the walls and transformables
-        myPhysics.loadWalls(map);
-        myPhysics.loadTransformables(map);
     }
 
 

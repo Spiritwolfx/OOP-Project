@@ -42,6 +42,10 @@ public class Physics {
         world.add(myPlayer.hitbox, myPlayer.x, myPlayer.y,
             myPlayer.getWidth(),myPlayer.getHeight());
 
+        //loading the walls and transformables
+        loadWalls(map);
+        loadTransformables(map);
+
         //adding player's hitbox (which is currently BaseForm) to HitboxFactory
         HitboxFactory.loadIndividualHitbox(myPlayer.hitbox);
     }
