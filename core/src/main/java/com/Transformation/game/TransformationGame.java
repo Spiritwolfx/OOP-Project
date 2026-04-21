@@ -14,6 +14,7 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.objects.TiledMapTileMapObject;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 
@@ -40,7 +41,7 @@ public class TransformationGame extends ApplicationAdapter {
 
         camera = new OrthographicCamera();
 
-        loadLevel("Test Map.tmx");
+        loadLevel("Assets/Assets/game.tmx");
 
         //calculating map size
         float mapWidth = map.getProperties().get("width", Integer.class) * map.getProperties().get("tilewidth", Integer.class);
@@ -70,6 +71,7 @@ public class TransformationGame extends ApplicationAdapter {
         renderer.render();
 
         batch.setProjectionMatrix(camera.combined);
+        renderMap();
         batch.begin();
         myPlayer.draw(batch);
         batch.end();
@@ -114,7 +116,11 @@ public class TransformationGame extends ApplicationAdapter {
         //creating our physics engine object
         myPhysics = new Physics(myPlayer, map);
 
+        //loading the walls and transformables
+        myPhysics.loadWalls(map);
+        myPhysics.loadTransformables(map);
     }
+
 
     /** to view tiled rectangles */
     public void showTiledShapes(){
@@ -127,7 +133,7 @@ public class TransformationGame extends ApplicationAdapter {
         //float mH = map.getProperties().get("height", Integer.class) * map.getProperties().get("tileheight", Integer.class);
 
         // Loop through every layer to find your collision boxes
-        MapLayer collisionLayer = map.getLayers().get("Object Layer 1");
+        MapLayer collisionLayer = map.getLayers().get("Collision Layer");
         MapObjects objects = collisionLayer.getObjects();
         for (MapObject obj : objects) {
             if (obj instanceof RectangleMapObject) {
@@ -177,4 +183,37 @@ public class TransformationGame extends ApplicationAdapter {
 
         shapeRenderer.end();
     }
+
+    /** to render all the visible object layers from our Tiled map */
+    public void renderMap(){
+        batch.begin();
+
+        for (MapLayer layer : map.getLayers()) {
+            // checking if layer is visible
+            if (layer.isVisible()) {
+
+                // getting all our objects
+                for (MapObject object : layer.getObjects()) {
+
+                    if (object instanceof TiledMapTileMapObject) {
+                        TiledMapTileMapObject tileObj = (TiledMapTileMapObject) object;
+
+                        float width = tileObj.getProperties().get("width", Float.class);
+                        float height = tileObj.getProperties().get("height", Float.class);
+
+                        batch.draw(
+                            tileObj.getTile().getTextureRegion(),
+                            tileObj.getX(),
+                            tileObj.getY(),
+                            width,
+                            height
+                        );
+                    }
+                }
+            }
+        }
+
+        batch.end();
+    }
 }
+

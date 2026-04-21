@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="18">
+ <tileset firstgid="1" source="../tilesets/Interior.tsx"/>
+ <tileset firstgid="833" source="../tilesets/collision.tsx"/>
+ <tileset firstgid="2813" source="../tilesets/shelves_2.tsx"/>
+ <tileset firstgid="2814" source="../tilesets/chair.tsx"/>
+ <tileset firstgid="2815" source="../tilesets/table_rect_0.tsx"/>
+ <tileset firstgid="2816" source="../tilesets/stove.tsx"/>
+ <layer id="1" name="Tile Layer 1" width="30" height="20">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgF9ABpjAwM6Yz0FxsF9AGj8Tu8wWj8Dm8wGr/DGwQDcQgQh9JZHAB8VxhV
+  </data>
+ </layer>
+ <objectgroup id="3" name="Object Layer 1">
+  <object id="1" gid="2813" x="110" y="179.5" width="175" height="92.5"/>
+  <object id="2" gid="2814" x="370" y="284" width="77" height="83"/>
+  <object id="3" gid="2815" x="251" y="288" width="132" height="68.5"/>
+  <object id="7" gid="2816" x="16.5" y="278.5" width="122" height="114.5"/>
+ </objectgroup>
+ <layer id="2" name="Collision" width="30" height="20" visible="0">
+  <data encoding="base64" compression="zlib">
+   eJzF1jkRwmAAROEwXDUSkIAA+nAk3HfCEaBEAAUCkIAEJCAACUhAAj1vTfy7M6/+2o3LUdShLvWoTwmlNKAhjWhME5rSjOa0oCWtaE0byiinLe1oTwcq6EgnOtONQk/my+DK/Blcma1KeFfmxeDKfBpcmV+DK7NZDe/KzA2uzIfBlfkxuDIbtfCuzMTgyrwbXJlvgyuzVA/vymwbXJlXgyszNv2cP0cyJvs=
+  </data>
+ </layer>
+ <objectgroup id="4" name="Collision Layer" visible="0">
+  <object id="13" x="0" y="0" width="480" height="16"/>
+  <object id="15" x="464" y="16" width="16" height="304"/>
+  <object id="16" x="0" y="304" width="464" height="16"/>
+  <object id="17" x="0" y="16" width="16" height="288"/>
+ </objectgroup>
+</map>

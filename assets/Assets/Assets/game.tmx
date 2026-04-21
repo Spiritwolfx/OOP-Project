@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="60" height="40" tilewidth="16" tileheight="16" infinite="0" nextlayerid="19" nextobjectid="79">
+ <tileset firstgid="1" source="../tilesets/Interior.tsx"/>
+ <tileset firstgid="833" source="../tilesets/windows_and_doors2.tsx"/>
+ <tileset firstgid="4929" source="../tilesets/plants_13.tsx"/>
+ <tileset firstgid="4930" source="../tilesets/collision.tsx"/>
+ <tileset firstgid="6910" source="../tilesets/fireplace_1.tsx"/>
+ <tileset firstgid="6911" source="../tilesets/decor_shields_4.tsx"/>
+ <tileset firstgid="6912" source="../tilesets/decors_paintings_7.tsx"/>
+ <tileset firstgid="6913" source="../tilesets/interiors_demo2.tsx"/>
+ <tileset firstgid="7089" source="../tilesets/bed_9.tsx"/>
+ <tileset firstgid="7090" source="../tilesets/cabinets_BA.tsx"/>
+ <tileset firstgid="7095" source="../tilesets/cabinets.tsx"/>
+ <tileset firstgid="7101" source="../tilesets/fixtures_BA.tsx"/>
+ <tileset firstgid="7103" source="../tilesets/stove.tsx"/>
+ <tileset firstgid="7104" source="../tilesets/Slice_0.tsx"/>
+ <tileset firstgid="7105" source="../tilesets/shelves_2.tsx"/>
+ <tileset firstgid="7106" source="../tilesets/table_rect_0.tsx"/>
+ <tileset firstgid="7107" source="../tilesets/chair.tsx"/>
+ <tileset firstgid="7108" source="../tilesets/interiors_demo.tsx"/>
+ <layer id="1" name="Walls" width="60" height="40" locked="1">
+  <data encoding="base64" compression="zlib">
+   eJzt1uENhSAMBGCYw21MZBQndCZdQ/2PFCKlDXdfYuI9Y1JfKSEELFu0rmAstO/dI1YmmknL+reevdpcqploJiNmyGMmDMdiXYGud11bzxJnl8iH87ku6yKIQKxgmWgmqZCT8Lx37n2fqx/NyP5J+ev+T2Z/5801+w8aT/0ZkdFo7LfWPSzt+715Wz+5/0K6pPdLv2tn7Xn11j+Jxvmn5lzbs4aWc9kNhBBCjg==
+  </data>
+ </layer>
+ <layer id="4" name="celi" width="60" height="40" locked="1">
+  <data encoding="base64" compression="zlib">
+   eJzt1DsKgDAQBcC18RgeRu9/JbERBAsRJf8ZSJE0SZZ9G5HfMhW4lCL2c93PUu5TGK1nn/6buxaj1R7+kt/v1jlim0u/gpHJLz3RQxf5pSf6GajV23lhrkB95BfaJb/QLvmlJzX16QHTIAuJ
+  </data>
+ </layer>
+ <layer id="16" name="portal" width="60" height="40" locked="1">
+  <data encoding="base64" compression="zlib">
+   eJztmDkOwkAQBCf0Apkxf+LIOP7E8TGOjOM9dLLSaKIFMV7v0iWVnDiYkiO3CCGEEPI5+0bkAI/w1OS+xp8zGi/wCm+F9N5x5wM+1fOVeHsIIiM4hpPge+evaHHnVNnBWeLtc7y3gEu4Kqy3+6K3RNjL3pr4t9412jbKLdxV3EsIIYQQQvyIW4c1de8oDbt1ePw/xI1vCFtfazo9evXGl3vrs/+GHr1648u99fXxffXGF8219fXROyTYy96asFsW9yxCSCpvfSoseQ==
+  </data>
+ </layer>
+ <objectgroup id="9" name="Portal" locked="1">
+  <object id="11" gid="570" x="420" y="246" width="64" height="64"/>
+  <object id="18" gid="6910" x="-24" y="614" width="231" height="228"/>
+  <object id="20" gid="6911" x="201" y="453.5" width="108" height="93"/>
+  <object id="22" gid="6912" x="659.167" y="483" width="155.5" height="91.5"/>
+ </objectgroup>
+ <layer id="5" name="FLoors" width="60" height="40" locked="1">
+  <data encoding="base64" compression="zlib">
+   eJztz8ENgCAQRUFagNa0axAsyS3AqyHCTPIOe9ufEgAAAAB/cm52AzBXyyldUY9Gnv3Nt2rsayX2Rj0a0b3w5lpe9pbZXwEAsIJjs/sBqnAXvA==
+  </data>
+ </layer>
+ <objectgroup id="14" name="Washroom" locked="1">
+  <object id="32" gid="7092" x="544.667" y="277.333" width="105.333" height="172.667"/>
+ </objectgroup>
+ <objectgroup id="15" name="ws non int" locked="1">
+  <object id="35" gid="7102" x="583.667" y="288" width="162.667" height="134"/>
+  <object id="69" gid="7097" x="591" y="271" width="153" height="110"/>
+  <object id="1" gid="4929" x="548.8" y="588.8" width="63.2" height="129.6"/>
+ </objectgroup>
+ <objectgroup id="12" name="couch" locked="1">
+  <object id="28" gid="7089" x="840.5" y="633.5" width="119" height="156"/>
+  <object id="38" gid="7101" x="782" y="302.667" width="168.667" height="120"/>
+  <object id="59" gid="7104" x="324" y="64.6667" width="78.6667" height="65.3333"/>
+  <object id="60" gid="7104" x="-12" y="60.6667" width="68" height="60"/>
+  <object id="62" gid="7106" x="237.333" y="282" width="119.333" height="60.6667"/>
+  <object id="63" gid="7107" x="350.667" y="278" width="44" height="64"/>
+  <object id="64" gid="7105" x="120" y="164.667" width="162" height="99.3333"/>
+  <object id="65" gid="7103" x="11" y="293" width="165" height="150"/>
+  <object id="70" gid="7128" x="258" y="588" width="180" height="110"/>
+ </objectgroup>
+ <layer id="8" name="Collision" width="60" height="40" visible="0" locked="1">
+  <properties>
+   <property name="solid" type="bool" value="false"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJzl2rdNAwEYxXHEABSks11QMAAFA1CYnEzO2WSDTbIJJicDJicTBqBgAAoGYAAKBqBgAApq/p9uB7t4n/Tr70k+Pb2T/XlZWeWoQCWqUI0a1KIO9WhAIwJoQjNa0Io2tKMDnehCN3rQiz70YwCDGMIwRhDEKMYwjglMYgrTCGEGswgjgjnMYwGLWEIUMSxjBatYQxzr2MAmtqBylvVdKK9l/RPKa1lL8zP9FOk7yxoRymtZX4XyWtYfobx+3t/igkw/RfrO+mhQKK/10bNQXuujL6G81ke5hZl+ivSd9VFAKK/1UVIor3Xvh1Be616/0F6w7lXav9a9SvvXuldp/1r32m96CMMYQRCjGMM4JjCJKUwjhBnMIowI5jCPBSxiCVHEsIwVrGINcaxjA5v2PmEbO9jFHvZxgEMkcIRjnCCJU5zhHBe4xBWucYNb3OEeKTzgEU8FWvvXuldp/1r3Ku3fbEdr/5Y5Wvs37mjt3zdHa//+Olr7t8SjtX9DHq39++LR2r/fHreDVa7I63awyvV63Q5WuZTX7WCV+/S6HaxyOT63g1Wuzud2sMolfO73WKX/I/0DBSWDcw==
+  </data>
+ </layer>
+ <objectgroup id="6" name="Collision Layer">
+  <object id="72" x="0" y="-32" width="960" height="48"/>
+  <object id="74" x="-16" y="0" width="32" height="640"/>
+  <object id="75" x="16" y="576" width="928" height="64"/>
+  <object id="76" x="944" y="0" width="16" height="624"/>
+ </objectgroup>
+ <objectgroup id="17" name="spawn">
+  <object id="71" x="512" y="576">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="18" name="Transformables" visible="0" locked="1"/>
+</map>

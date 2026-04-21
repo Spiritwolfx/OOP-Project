@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="9">
+ <tileset firstgid="1" source="../tilesets/collision.tsx"/>
+ <tileset firstgid="1981" source="../tilesets/Interior.tsx"/>
+ <tileset firstgid="2813" source="../tilesets/bed_9.tsx"/>
+ <tileset firstgid="2814" source="../tilesets/decors_paintings_7.tsx"/>
+ <tileset firstgid="2815" source="../tilesets/plants_13.tsx"/>
+ <tileset firstgid="2816" source="../tilesets/windows_and_doors2.tsx"/>
+ <layer id="2" name="Floor and wall" width="30" height="20">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgF9ACP2BkYHrPTX2wU0AcwcTAwMHPQX2ygwKh/R/1LC7GBAqP+Hd7+5Qe6QwCIBTnIFyckhs0cAOqBD4A=
+  </data>
+ </layer>
+ <objectgroup id="3" name="Objects">
+  <object id="1" gid="2813" x="374.502" y="324.137" width="96.7888" height="159.207"/>
+  <object id="2" gid="2814" x="224.385" y="157.031" width="134.318" height="72.2946"/>
+  <object id="3" gid="2815" x="152.289" y="269.422" width="60.8383" height="112.196"/>
+ </objectgroup>
+ <layer id="4" name="Doors" width="30" height="20">
+  <data encoding="base64" compression="zlib">
+   eJztjccNgDAQBK8BSzahB0JjhG4IPRC6wdAP69/JQuIB5mE80mh/O0SBgF90kqiHg7WjdNvd8K/hztZ4POxmgiiHBdtSuO9WaNSwYdt63J3QmOHCdr3o8uYb3Tvsrv5RV3/YjRRRDBO2xlS57Qb85QRGxkJZ
+  </data>
+ </layer>
+ <layer id="5" name="Pillar" width="30" height="20">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFIxHc4hhoF4wMMBrOwxuMxu/wBqPxOwooAQCAzwOJ
+  </data>
+ </layer>
+ <layer id="1" name="Collision" width="30" height="20" visible="0">
+  <data encoding="base64" compression="zlib">
+   eJzF1ksNAkEQhOHe7ZlZWAgCOCAACUhAAAcEIAEJCOCAACQgAQEcELAHBJDwfi9UUh6KSr7jpPPfZpeZHczsCCc4wwWucIM7POAJL3jDB2r4guF9Bjk4BIiQoIAGNKGEFrRhkZv1cpNvi5vjP9ztOJvVGzqb1Zs5m9VbO5vVq53N6g0Cm9WbBjartwpsVm8f2KxeP7JZvUlks3rLyGb1qshm9bqJzeqNEpvVmyc2q7dJbFb/c8rC7AdshTLV
+  </data>
+ </layer>
+ <objectgroup id="6" name="Collision Layer" visible="0">
+  <object id="4" x="0" y="0" width="480" height="16"/>
+  <object id="5" x="464" y="16" width="16" height="304"/>
+  <object id="6" x="0" y="304" width="464" height="16"/>
+  <object id="7" x="0" y="16" width="16" height="288"/>
+ </objectgroup>
+</map>

@@ -37,8 +37,6 @@ public class Physics {
 
     //constructor
     public Physics(Player myPlayer, TiledMap map){
-        loadWalls(map);
-        loadTransformables(map);
 
         //adding our player hitbox to our jbump world
         world.add(myPlayer.hitbox, myPlayer.x, myPlayer.y,
@@ -73,9 +71,8 @@ public class Physics {
     /** gets all the collidable objects from our object layer*/
     public void loadWalls(TiledMap map) {
         //getting all objects from the object layer 1
-        MapLayer collisionLayer = map.getLayers().get("Object Layer 1");
+        MapLayer collisionLayer = map.getLayers().get("Collision Layer");
         MapObjects objects = collisionLayer.getObjects();
-
         //We need the map's total pixel height to flip the Y-axis
         //float mH = map.getProperties().get("height", Integer.class) * map.getProperties().get("tileheight", Integer.class);
 
@@ -95,7 +92,7 @@ public class Physics {
     }
 
     public void loadTransformables(TiledMap map){
-        MapLayer transformablesLayer = map.getLayers().get("transformables");
+        MapLayer transformablesLayer = map.getLayers().get("Transformables");
         MapObjects objects = transformablesLayer.getObjects();
 
         //list to store needed transformable objects (sent to FormFactory)

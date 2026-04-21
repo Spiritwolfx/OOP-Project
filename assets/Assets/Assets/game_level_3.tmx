@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="10">
+ <tileset firstgid="1" source="../tilesets/Interior.tsx"/>
+ <tileset firstgid="833" source="../tilesets/interiors_demo.tsx"/>
+ <tileset firstgid="858" source="../tilesets/collision.tsx"/>
+ <tileset firstgid="2838" source="../tilesets/fireplace_1.tsx"/>
+ <tileset firstgid="2839" source="../tilesets/decor_shields_4.tsx"/>
+ <layer id="1" name="Floors and wall" width="30" height="20">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgF9ABqQKw+AGJuQOw+AGIjDYy0cKbUH+jiw92/Iy1+R/1Lvn9DmYlQRCEYTP6lBwgG4hAgDqVAHJ9aXHIA1E4ezg==
+  </data>
+ </layer>
+ <objectgroup id="3" name="Furniture">
+  <object id="2" gid="2838" x="-33.51" y="295.475" width="226.315" height="292.273"/>
+  <object id="3" gid="2839" x="178.319" y="154.582" width="115.024" height="105.068"/>
+  <object id="5" gid="853" x="268.166" y="273.453" width="188.779" height="105.282"/>
+ </objectgroup>
+ <layer id="2" name="Collision" width="30" height="20" visible="0">
+  <data encoding="base64" compression="zlib">
+   eJzF1kcNQmEURGGSRzGAACQgAQkIoPfy6L1IQACLJwAJSEAACwQgAQGcCWj45ybf+mR2N4lSqSpqqKOBJlpoo4MueuhjgCFGGCPGBFPMMMcCS6ywxgZb7LD/N14IfQnNfDp8V1vLhq62XgxdbX0YutqazoTvamvJ0NXWs6GrrXdDV1s/hq62FrPhu9oaG7raejN0tfVt6GprIRe+q60VQ1dbr4autj4NXW0N9dsccMQp+m39An8GLSQ=
+  </data>
+ </layer>
+ <objectgroup id="4" name="Collision Layer" visible="0">
+  <object id="6" x="0" y="0" width="480" height="16"/>
+  <object id="7" x="464" y="16" width="16" height="304"/>
+  <object id="8" x="0" y="304" width="464"/>
+  <object id="9" x="0" y="16" width="16" height="288"/>
+ </objectgroup>
+</map>
