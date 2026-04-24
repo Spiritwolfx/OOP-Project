@@ -3,6 +3,7 @@ package com.Transformation.game.Forms;
 import com.Transformation.game.Physics.PropInstance;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -26,6 +27,10 @@ public class FormFactory {
                 registry.put(prop.name, newForm);
             }
         }
+    }
+
+    public static Collection<MimicForm> getAllForms() {
+        return registry.values();
     }
 
     public static MimicForm get(String formName) {

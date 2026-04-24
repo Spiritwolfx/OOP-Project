@@ -118,6 +118,13 @@ public class Player {
         y = result.goalY;
         sprite.setPosition(x, y);
 
+        //update current form's position to match player
+        if (!currForm.formName.equals("BaseForm")) {
+            currForm.x = x;
+            currForm.y = y;
+            currForm.sprite.setPosition(x, y);
+        }
+
         // check if we landed on something below us
         isGrounded = false; // reset every frame
         for (int i = 0; i < result.projectedCollisions.size(); i++) {
@@ -133,8 +140,11 @@ public class Player {
 
     /** use in render() to draw our player */
     public void draw(SpriteBatch batch) {
-//        if (this.currForm.formName.equals("BaseForm"))
-        sprite.draw(batch);
+        if (currForm.formName.equals("BaseForm")) {
+            sprite.draw(batch); // draw ghost
+        } else {
+            currForm.draw(batch); // draw the form's own sprite
+        }
     }
 
     public float getWidth() {

@@ -11,7 +11,8 @@ public class TestForm extends MimicForm {
         this.height = height;
         this.speed = 400f;
         this.weight = 700f;
-        this.textureName = "ghost2.png";
+        this.textureName = "Assets/Assets/table_rect_0.png"; // actual bench sprite
+        loadSprite(); // ADD THIS
     }
 
     @Override
