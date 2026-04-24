@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
 public class FormFactory {
     private static final Map<String, MimicForm> registry = new HashMap<>();
@@ -23,7 +22,9 @@ public class FormFactory {
             }
             if (prop.name.equals("BottleForm")) {
                 newForm = new BottleForm(prop.name, prop.x, prop.y, prop.width, prop.height);
-                System.out.println("HERE");
+            }
+            if (prop.name.equals("StoveForm")) {
+                newForm = new StoveForm(prop.name, prop.x, prop.y, prop.width, prop.height);
             }
             // add more forms here as you build them
 

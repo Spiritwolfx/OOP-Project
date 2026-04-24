@@ -15,10 +15,12 @@ public abstract class MimicForm {
 
     //called once when form is created
     public void loadSprite() {
-        Texture tex = new Texture(textureName);
-        sprite = new Sprite(tex);
-        sprite.setSize(width, height);
-        sprite.setPosition(x, y);
+        if (textureName != null) {
+            Texture tex = new Texture(textureName);
+            sprite = new Sprite(tex);
+            sprite.setSize(width, height);
+            sprite.setPosition(x, y);
+        }
     }
 
     //draws the form at its current position

@@ -72,8 +72,10 @@ public class Player {
         this.currForm.onTransform(this);
         physics.updateHitbox(this);
 
-        Texture newTex = new Texture(currForm.textureName);
-        sprite.setTexture(newTex);
+        if (currForm.textureName != null) {
+            Texture newTex = new Texture(currForm.textureName);
+            sprite.setTexture(newTex);
+        }
 //        sprite.setSize(currForm.width, currForm.height); // match sprite size to form
     }
 
@@ -111,7 +113,8 @@ public class Player {
         if (!currForm.formName.equals("BaseForm")) {
             currForm.x = x;
             currForm.y = y;
-            currForm.sprite.setPosition(x, y);
+            if (currForm.sprite != null)
+                currForm.sprite.setPosition(x, y);
         }
 
         // check if we landed on something below us

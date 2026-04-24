@@ -1,6 +1,7 @@
 package com.Transformation.game;
 
 import com.Transformation.game.Animations.NPC;
+import com.Transformation.game.Forms.BottleForm;
 import com.Transformation.game.Forms.FormFactory;
 import com.Transformation.game.Forms.MimicForm;
 import com.Transformation.game.Physics.Physics;
@@ -8,8 +9,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
+
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.MapLayer;
@@ -27,7 +27,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.dongbat.jbump.Item;
 import com.dongbat.jbump.Rect;
 
-import java.util.Collection;
+import java.text.Normalizer;
 import java.util.Set;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
@@ -42,6 +42,9 @@ public class TransformationGame extends ApplicationAdapter {
     private Player myPlayer;
     private ShapeRenderer shapeRenderer;
     private NPC npc;
+
+    private int currentLevel;
+
     @Override
     public void create() {
         batch = new SpriteBatch();
@@ -49,6 +52,7 @@ public class TransformationGame extends ApplicationAdapter {
         camera = new OrthographicCamera();
 
         loadLevel("Assets/Assets/game_level_1.tmx");
+        currentLevel = 1;
 
         //calculating map size
         float mapWidth = map.getProperties().get("width", Integer.class) * map.getProperties().get("tilewidth", Integer.class);
@@ -73,6 +77,7 @@ public class TransformationGame extends ApplicationAdapter {
         npc.update(delta);
 
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
+        checkLevel1Conditions(myPlayer);
 
         renderer.setView(camera);
         renderer.render();
@@ -130,16 +135,26 @@ public class TransformationGame extends ApplicationAdapter {
         spawnY = spawn.getProperties().get("y", Float.class);
         npc = new NPC(spawnX,spawnY,"LeftWalk.png","LeftIdle.png");
 
-        // getting and storing where our npc should be walking to when triggered
-        MapObject target = map.getLayers().get("Target").getObjects().get(0);
-        npc.targetX = target.getProperties().get("x", Float.class);
-        System.out.println(npc.targetX);
-
-
         //creating our physics engine object
         myPhysics = new Physics(myPlayer, map);
     }
 
+    public void checkLevel1Conditions(Player myPlayer){
+
+        BottleForm bottle = (BottleForm) FormFactory.get("BottleForm");
+        if (bottle == null) return;
+
+        if ((npc.targetX != -1) && (bottle.isTouchingGround(myPhysics))){
+            npc.targetX = bottle.x;
+            npc.state = NPC.State.WALKING;
+        }
+
+        if (myPlayer.currForm.formName.equals("StoveForm")){
+            System.out.println("O for Open");
+        }
+
+
+    }
 
     /** to view tiled rectangles */
     public void showTiledShapes(){
@@ -191,7 +206,7 @@ public class TransformationGame extends ApplicationAdapter {
             Rect rect = myPhysics.world.getRect(item);
 
             //rendering the object
-            if (!(item.userData.equals("wall")) && !(item.userData.equals("BaseForm"))) {
+            if (!(item.userData.equals("wall")) && !(item.userData.equals("BaseForm")) && !(item.userData.equals("floor"))) {
                 shapeRenderer.setColor(Color.RED); //using red for transformables
                 shapeRenderer.rect(rect.x, rect.y, rect.w, rect.h);
                 shapeRenderer.setColor(Color.GREEN);

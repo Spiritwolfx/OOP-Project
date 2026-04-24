@@ -21,7 +21,7 @@ public class Physics {
         @Override
         public Response filter(Item item, Item other) {
             // If it's not a wall, then it is a transformable (as we are the player, cannot collide with ourselves)
-            if (other.userData.equals("wall")) return Response.slide;
+            if (other.userData.equals("wall") || other.userData.equals("floor") ) return Response.slide;
 
             //ignoring transformables if we are ghost (BaseForm)
             if (item.userData.equals("BaseForm"))
@@ -80,17 +80,26 @@ public class Physics {
         //We need the map's total pixel height to flip the Y-axis
         //float mH = map.getProperties().get("height", Integer.class) * map.getProperties().get("tileheight", Integer.class);
 
+        String itemName; // stores the name we are going to give each of the collidable
+
         //looping through all the objects and adding to jbump
         for (MapObject object : objects) {
 
             if (object instanceof RectangleMapObject) {
+
+                itemName = "wall"; // if not the floor then the wall (default collidable)
+
+                // if not null then it is the floor (no other collidable is named)
+                if (!(object.getProperties().get("isFloor") == null))
+                    itemName = "floor";
+
                 //down-casting then getting our rectangle
                 Rectangle rect = ((RectangleMapObject) object).getRectangle();
                 // THE CRITICAL FLIP:
                 // libGDX_Y = Total_Map_Height - Tiled_Y - Rectangle_Height
                 //float visualY = mH - rect.y - rect.height;
                 //System.out.println("Tiled Y: " + rect.y + " | Flipped Y: " + visualY + " | Map Total H: " + mH);
-                world.add(new Item<>("wall"), rect.x, rect.y, rect.width, rect.height);
+                world.add(new Item<>(itemName), rect.x, rect.y, rect.width, rect.height);
 
             }
         }
@@ -158,7 +167,7 @@ public class Physics {
 
         for (Item item : items) {
             // filtering out the walls and the player itself
-            if (!(item.userData.equals("wall")) && !(item.userData.equals(player.currForm.formName))) {
+            if (!(item.userData.equals("wall")) && !(item.userData.equals("floor")) && !(item.userData.equals(player.currForm.formName))) {
 
                 // getting the rectangle of the item we got from our world.queryRect
                 Rect rect = world.getRect(item);
