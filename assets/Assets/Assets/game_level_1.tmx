@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="10" nextobjectid="37">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="11" nextobjectid="50">
  <tileset firstgid="1" source="../tilesets/Interior.tsx"/>
  <tileset firstgid="833" source="../tilesets/collision.tsx"/>
  <tileset firstgid="2813" source="../tilesets/shelves_2.tsx"/>
@@ -9,10 +9,13 @@
   <image source="table_rect_0.png" width="88" height="32"/>
  </tileset>
  <tileset firstgid="2816" source="../tilesets/stove.tsx"/>
- <tileset firstgid="2817" name="shelves_3" tilewidth="625" tileheight="585" tilecount="1" columns="0">
+ <tileset firstgid="2817" name="shelves_3" tilewidth="1264" tileheight="843" tilecount="2" columns="0">
   <grid orientation="orthogonal" width="1" height="1"/>
-  <tile id="0">
-   <image source="shelves_3.png" width="625" height="585"/>
+  <tile id="1">
+   <image source="shelves_03.png" width="1264" height="843"/>
+  </tile>
+  <tile id="2">
+   <image source="Bottle1.png" width="263" height="602"/>
   </tile>
  </tileset>
  <layer id="1" name="Tile Layer 1" width="30" height="20" locked="1">
@@ -20,13 +23,14 @@
    eJxjYBgF9ABpjAwM6Yz0FxsF9AGj8Tu8wWj8Dm8wGr/DGwQDcQgQh9JZHAB8VxhV
   </data>
  </layer>
- <objectgroup id="3" name="Object Layer 1">
-  <object id="1" gid="2813" x="110" y="179.5" width="175" height="92.5"/>
+ <objectgroup id="3" name="Object Layer 1" locked="1">
   <object id="2" gid="2814" x="370" y="284" width="77" height="83"/>
   <object id="7" gid="2816" x="16.5" y="278.5" width="122" height="114.5"/>
+  <object id="38" gid="2818" x="112" y="180.667" width="169.667" height="93.6667"/>
  </objectgroup>
  <objectgroup id="9" name="HideTransformables" visible="0" locked="1">
   <object id="3" gid="2815" x="273" y="288" width="94.3333" height="64"/>
+  <object id="39" gid="2819" x="168.955" y="114.136" width="10.8636" height="25.8182"/>
  </objectgroup>
  <layer id="2" name="Collision" width="30" height="20" visible="0" locked="1">
   <data encoding="base64" compression="zlib">
@@ -38,6 +42,8 @@
   <object id="15" x="464" y="1.33333" width="16" height="317.167"/>
   <object id="16" x="0" y="272" width="479.667" height="48"/>
   <object id="17" x="0" y="2.66667" width="16" height="316"/>
+  <object id="46" x="39.2727" y="196.364" width="76.7273" height="74.9091"/>
+  <object id="48" x="156" y="116.364" width="81.6364" height="4.72727"/>
  </objectgroup>
  <objectgroup id="5" name="Transformables" visible="0" locked="1">
   <properties>
@@ -46,6 +52,11 @@
   <object id="18" x="272" y="224" width="95.3334" height="64">
    <properties>
     <property name="formName" value="Box"/>
+   </properties>
+  </object>
+  <object id="45" x="168.08" y="87.3295" width="12.3636" height="26.8182">
+   <properties>
+    <property name="formName" value="BottleForm"/>
    </properties>
   </object>
  </objectgroup>

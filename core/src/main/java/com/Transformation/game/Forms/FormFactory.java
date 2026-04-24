@@ -21,6 +21,10 @@ public class FormFactory {
             if (prop.name.equals("Box")) {
                 newForm = new TestForm(prop.name, prop.x, prop.y, prop.width, prop.height);
             }
+            if (prop.name.equals("BottleForm")) {
+                newForm = new BottleForm(prop.name, prop.x, prop.y, prop.width, prop.height);
+                System.out.println("HERE");
+            }
             // add more forms here as you build them
 
             if (newForm != null) {

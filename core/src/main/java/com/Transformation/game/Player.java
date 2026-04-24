@@ -134,7 +134,6 @@ public class Player {
             }
             else if (formName != null) {
                 // else put player in nearest transformable form
-                if (isGrounded)
                     changeForm(formName, physics);
             }
         }
