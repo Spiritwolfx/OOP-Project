@@ -1,11 +1,15 @@
 package com.Transformation.game;
 
 import com.Transformation.game.Animations.NPC;
+import com.Transformation.game.Forms.FormFactory;
+import com.Transformation.game.Forms.MimicForm;
 import com.Transformation.game.Physics.Physics;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.MapLayer;
@@ -23,6 +27,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.dongbat.jbump.Item;
 import com.dongbat.jbump.Rect;
 
+import java.util.Collection;
 import java.util.Set;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
@@ -74,7 +79,11 @@ public class TransformationGame extends ApplicationAdapter {
 
         batch.setProjectionMatrix(camera.combined);
         renderMap();
+
         batch.begin();
+        for (MimicForm transformable : FormFactory.getAllForms()){
+            transformable.draw(batch);
+        }
         npc.draw(batch);
         myPlayer.draw(batch);
         batch.end();
@@ -121,6 +130,10 @@ public class TransformationGame extends ApplicationAdapter {
         spawnY = spawn.getProperties().get("y", Float.class);
         npc = new NPC(spawnX,spawnY,"LeftWalk.png","LeftIdle.png");
 
+        // getting and storing where our npc should be walking to when triggered
+        MapObject target = map.getLayers().get("Target").getObjects().get(0);
+        npc.targetX = target.getProperties().get("x", Float.class);
+        System.out.println(npc.targetX);
 
 
         //creating our physics engine object

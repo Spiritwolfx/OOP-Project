@@ -4,15 +4,15 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 public class NPC {
     public enum State { IDLE,STANDING, WALKING }
-    public State state = State.IDLE;
+    public State state = State.WALKING;
 
     private Vector2 pos;
     private float stateTime = 0;
+    public float targetX;
     private Animation<TextureRegion> walkAnim;
     private Animation<TextureRegion> idleAnim;
 
@@ -55,8 +55,16 @@ public class NPC {
 
     public void update(float delta) {
         stateTime += delta;
-        if (state == State.WALKING) {
-            pos.x -= 30 * delta; // Moves Left
+        if (state == State.WALKING && targetX != -1) {
+            // Move toward target
+            if (pos.x > targetX + 5) pos.x -= 60 * delta;
+            else if (pos.x < targetX - 5) pos.x += 60 * delta;
+            else {
+                // Arrived!
+                pos.x = targetX;
+                state = State.STANDING; // Or a new 'INVESTIGATING' state
+                targetX = -1;
+            }
         }
     }
 
@@ -72,6 +80,7 @@ public class NPC {
         }
 
         // Draw the selected frame at your specific size (256x256)
-        batch.draw(frame, pos.x, pos.y, 256, 256);
+        batch.draw(frame, pos.x - 128, pos.y, 256, 256);
+        // offsetting the pos.x as draws from bottom left corner of frame
     }
 }

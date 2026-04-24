@@ -78,6 +78,7 @@ public class Player {
     }
 
     public void update(float delta, Physics physics) {
+
         // x-axis movement
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)) velX = -currForm.speed;
         else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)|| Gdx.input.isKeyPressed(Input.Keys.D)) velX = currForm.speed;
@@ -91,31 +92,19 @@ public class Player {
             velY = 400f;
         }
 
-        // transform — press E near a transformable object
-        if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
-            String formName = physics.getNearbyTransformable(this);
-            System.out.println("Form Name:" + formName);
-            if (!currForm.formName.equals("BaseForm") && formName == null) {
-                // if player is not in baseForm then change to baseForm
-                changeForm("BaseForm", physics);
-            }
-            else if (formName != null) {
-                // else put player in nearest transformable form
-                changeForm(formName, physics);
-            }
-        }
+
 
         // jbump handles collision — moves player to where it's allowed to go
         Response.Result result = physics.world.move(
             hitbox,
             x + velX * delta,  // where you WANT to go
-            y + velY * delta,
-            physics.heistFilter  // using our custom collisionFilter (see definition)
+            y + velY * delta ,
+            physics.heistFilter // using our custom collisionFilter (see definition)
         );
 
         // update position to where jbump allowed us to go
-        x = result.goalX;
-        y = result.goalY;
+        this.x = result.goalX;
+        this.y = result.goalY;
         sprite.setPosition(x, y);
 
         //update current form's position to match player
@@ -132,6 +121,21 @@ public class Player {
             if (col.normal.y == 1) { // something hit from below = ground
                 isGrounded = true;
                 velY = 0; // stop falling
+            }
+        }
+        // transform — press E near a transformable object
+        if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
+            String formName = physics.getNearbyTransformable(this);
+            System.out.println("Form Name:" + formName);
+            if (!currForm.formName.equals("BaseForm") && formName == null) {
+                // if player is not in baseForm then change to baseForm
+                if (isGrounded)
+                    changeForm("BaseForm", physics);
+            }
+            else if (formName != null) {
+                // else put player in nearest transformable form
+                if (isGrounded)
+                    changeForm(formName, physics);
             }
         }
 

@@ -82,6 +82,7 @@ public class Physics {
 
         //looping through all the objects and adding to jbump
         for (MapObject object : objects) {
+
             if (object instanceof RectangleMapObject) {
                 //down-casting then getting our rectangle
                 Rectangle rect = ((RectangleMapObject) object).getRectangle();
