@@ -79,7 +79,7 @@ public class Player {
 //        sprite.setSize(currForm.width, currForm.height); // match sprite size to form
     }
 
-    public void update(float delta, Physics physics) {
+    public void update(float delta, Physics physics, int currentLevel) {
 
         // x-axis movement
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)) velX = -currForm.speed;
@@ -128,7 +128,7 @@ public class Player {
         }
         // transform — press E near a transformable object
         if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
-            String formName = physics.getNearbyTransformable(this);
+            String formName = physics.getNearbyTransformable(this,currentLevel);
             System.out.println("Form Name:" + formName);
             if (!currForm.formName.equals("BaseForm") && formName == null) {
                 // if player is not in baseForm then change to baseForm
@@ -148,9 +148,9 @@ public class Player {
     public void draw(SpriteBatch batch) {
         if (currForm.formName.equals("BaseForm")) {
             sprite.draw(batch); // draw ghost
-        } else {
-            currForm.draw(batch); // draw the form's own sprite
-        }
+        } //else {
+            //currForm.draw(batch); // draw the form's own sprite
+        //}
     }
 
     public float getWidth() {

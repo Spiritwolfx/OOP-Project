@@ -1,10 +1,13 @@
 package com.Transformation.game.Animations;
 
+import com.Transformation.game.Physics.Physics;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.dongbat.jbump.Item;
 
 public class NPC {
     public enum State { IDLE,STANDING, WALKING }
@@ -16,8 +19,13 @@ public class NPC {
     private Animation<TextureRegion> walkAnim;
     private Animation<TextureRegion> idleAnim;
 
+    public boolean wet = false;
+    private Color tint = Color.WHITE.cpy(); // starts as normal white
+    public Item<String> hitbox = new Item<>("NPC");
+
+
     // constructor that makes our animations as well
-    public NPC(float x, float y, String walkFile, String idleFile) {
+    public NPC(float x, float y, String walkFile, String idleFile, Physics physics) {
         this.pos = new Vector2(x, y);
 
         // loading our animations frames image
@@ -54,10 +62,12 @@ public class NPC {
 
         // finally IDLE animation done as well
         this.idleAnim = new Animation<TextureRegion>(0.5f, frames);
+
+        physics.world.add(this.hitbox, pos.x - 20 , pos.y , 60, 143);
     }
 
     /** handles npc movememnt */
-    public void update(float delta) {
+    public void update(float delta, Physics phsyics) {
         stateTime += delta;
 
         if (state == State.WALKING && targetX != -1) {
@@ -71,6 +81,9 @@ public class NPC {
                 targetX = -1;
 
             }
+
+            //move hitbox
+            phsyics.world.move(this.hitbox,pos.x - 20 , pos.y , phsyics.heistFilter);
         }
     }
 
@@ -86,7 +99,30 @@ public class NPC {
             frame = idleAnim.getKeyFrame(stateTime, true);
         }
 
+        batch.setColor(tint); // to change color if npc is wet
         // draw the selected frame at your specific size (256x256)
         batch.draw(frame, pos.x - 128, pos.y, 256, 256);
+
+        batch.setColor(Color.WHITE); //reset the batch color
+    }
+
+    public void setWet(boolean wet) {
+        this.wet = wet;
+        if (wet) {
+            // tints the NPC to a darker, blueish hue to look "soaked"
+            // (Red, Green, Blue, Alpha)
+            this.tint.set(0.6f, 0.6f, 1.0f, 1f);
+            System.out.println("NPC is now flammable!");
+        } else {
+            this.tint.set(Color.WHITE);
+        }
+    }
+
+    public float getX(){
+        return pos.x;
+    }
+
+    public float getY(){
+        return pos.y;
     }
 }

@@ -1,16 +1,17 @@
 package com.Transformation.game.Forms;
 
+import com.Transformation.game.Animations.NPC;
 import com.Transformation.game.Physics.HitboxFactory;
 import com.Transformation.game.Physics.Physics;
 import com.Transformation.game.Player;
 import com.dongbat.jbump.Collision;
 import com.dongbat.jbump.Response;
 
-public class BottleForm extends MimicForm {
+public class FuelForm extends MimicForm {
 
     public boolean isBroken = false; // is the bottle broken or not
 
-    public BottleForm(String name, float x, float y, float width, float height) {
+    public FuelForm(String name, float x, float y, float width, float height) {
         this.formName = name;
         this.x = x;
         this.y = y;
@@ -18,7 +19,7 @@ public class BottleForm extends MimicForm {
         this.height = height;
         this.speed = 200f ;
         this.weight = 1200f;
-        this.textureName = "Assets/Assets/Bottle1.png";
+        this.textureName = "Assets/Assets/FuelBottle.png";
         loadSprite();
     }
 
@@ -52,8 +53,38 @@ public class BottleForm extends MimicForm {
         return isBroken;
     }
 
+    public void checkHitNpc(NPC npc, Player player, Physics physics){
+        // project the bottle's movement 1 unit down to check for collision
+        Response.Result check = physics.world.check(
+            HitboxFactory.getHitbox(this.formName),
+            this.x,
+            this.y - 1, // Checking downwards
+            physics.heistFilter
+        );
+
+        // loop through what we might have hit
+        for (int i = 0; i < check.projectedCollisions.size(); i++) {
+            Collision col = check.projectedCollisions.get(i);
+
+            // check if the 'other' object is the NPC
+            String type = (String) col.other.userData;
+
+            if (type != null && type.equals("NPC")) {
+                System.out.println("HITTT - NPC Soaked!");
+
+                this.speed = 0f;    // stop the bottle
+                this.isBroken = true;
+                player.changeForm("BaseForm",physics);
+
+            }
+        }
+
+
+    }
+
     @Override
     public void onTransform(Player player) {
         System.out.println("Transformed into " + formName);
     }
 }
+

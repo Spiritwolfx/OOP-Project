@@ -7,7 +7,8 @@ public class BaseForm extends MimicForm {
         this.formName = "BaseForm";
         this.speed = 200f;
         this.weight = 1000f;
-        this.textureName = "ghost2cropped.png"; // default player sprite
+        this.textureName = "ghost2cropped.png";// default player sprite
+        loadSprite();
     }
 
     @Override

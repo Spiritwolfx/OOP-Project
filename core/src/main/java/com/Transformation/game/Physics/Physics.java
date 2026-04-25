@@ -1,5 +1,6 @@
 package com.Transformation.game.Physics;
 
+import com.Transformation.game.Forms.BottleForm;
 import com.Transformation.game.Forms.FormFactory;
 import com.Transformation.game.Player;
 import com.badlogic.gdx.maps.MapLayer;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
 import com.dongbat.jbump.*;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 
 /** contains all physics logic*/
@@ -20,12 +22,20 @@ public class Physics {
     public CollisionFilter heistFilter = new CollisionFilter() {
         @Override
         public Response filter(Item item, Item other) {
+            // npc shouldn't collide with anything
+            if (item.userData.equals("NPC")) return null;
+
+            if(item.userData.equals("BottleForm") || item.userData.equals("FuelForm"))
+                if (other.userData.equals("NPC")) return Response.slide;
+
+            if (other.userData.equals("NPC")) return null;
+
             // If it's not a wall, then it is a transformable (as we are the player, cannot collide with ourselves)
             if (other.userData.equals("wall") || other.userData.equals("floor") ) return Response.slide;
 
             //ignoring transformables if we are ghost (BaseForm)
-            if (item.userData.equals("BaseForm"))
-                return null;
+            //if (item.userData.equals("BaseForm"))
+                //return null;
 
             if (other.userData.equals("BaseForm"))
                 return null;
@@ -145,7 +155,7 @@ public class Physics {
         HitboxFactory.loadHitboxes(hitboxes);
     }
 
-    public String getNearbyTransformable(Player player) {
+    public String getNearbyTransformable(Player player, int currentLevel) {
         // adding extra range around the player to make the search area
         float range = 25f;
 
@@ -158,7 +168,8 @@ public class Physics {
         //creating a list of all rectangles in the search area
         world.queryRect(searchX, searchY, searchW, searchH,CollisionFilter.defaultFilter,items);
 
-        String closestForm = null;
+        String tempClosestForm = null;
+        String validClosestForm = null;
         float minDistanceSq = Float.MAX_VALUE; // assigning highest value possible to minimum distance (squared)
 
         // getting the center of the player
@@ -166,8 +177,9 @@ public class Physics {
         float playerCenterY = player.y + (player.getHeight() / 2);
 
         for (Item item : items) {
-            // filtering out the walls and the player itself
-            if (!(item.userData.equals("wall")) && !(item.userData.equals("floor")) && !(item.userData.equals(player.currForm.formName))) {
+            // filtering out the walls,floor, NPC and the player itself
+            if (!(item.userData.equals("wall")) && !(item.userData.equals("floor"))
+                && !(item.userData.equals(player.currForm.formName)) && !(item.userData.equals("NPC"))) {
 
                 // getting the rectangle of the item we got from our world.queryRect
                 Rect rect = world.getRect(item);
@@ -183,13 +195,17 @@ public class Physics {
 
                 // check if this is the closest one so far
                 if (distSq < minDistanceSq) {
-                    minDistanceSq = distSq;
-                    closestForm = (String) item.userData;
+
+                    tempClosestForm = validClosestForm((String) item.userData,currentLevel);
+                    if (tempClosestForm != null) {
+                        minDistanceSq = distSq;
+                        validClosestForm = tempClosestForm;
+                    }
                 }
             }
         }
 
-        return closestForm; // Returns the nearest string, or null if nothing was found
+        return validClosestForm; // Returns the nearest string, or null if nothing was found
     }
     public void removeTransformable(String formName) {
         //find and remove the static prop from jbump world
@@ -199,5 +215,16 @@ public class Physics {
                 return;
             }
         }
+    }
+
+    /** to check if the closest from can be turned into at this point of the level*/
+    public String validClosestForm(String closestForm, int currentLevel){
+        if ((currentLevel == 1) && closestForm.equals("FuelForm")){
+            if (((BottleForm) FormFactory.get("BottleForm")).isBroken){
+                return closestForm;
+            }
+            return null;
+        }
+        return closestForm;
     }
 }

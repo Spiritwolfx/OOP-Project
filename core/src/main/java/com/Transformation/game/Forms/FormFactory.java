@@ -23,6 +23,9 @@ public class FormFactory {
             if (prop.name.equals("BottleForm")) {
                 newForm = new BottleForm(prop.name, prop.x, prop.y, prop.width, prop.height);
             }
+            if (prop.name.equals("FuelForm")) {
+                newForm = new FuelForm(prop.name, prop.x, prop.y, prop.width, prop.height);
+            }
             if (prop.name.equals("StoveForm")) {
                 newForm = new StoveForm(prop.name, prop.x, prop.y, prop.width, prop.height);
             }

@@ -1,15 +1,16 @@
 package com.Transformation.game;
 
 import com.Transformation.game.Animations.NPC;
-import com.Transformation.game.Forms.BottleForm;
-import com.Transformation.game.Forms.FormFactory;
-import com.Transformation.game.Forms.MimicForm;
+import com.Transformation.game.Forms.*;
+import com.Transformation.game.Physics.HitboxFactory;
 import com.Transformation.game.Physics.Physics;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.MapLayer;
@@ -41,6 +42,7 @@ public class TransformationGame extends ApplicationAdapter {
     private Physics myPhysics;
     private Player myPlayer;
     private ShapeRenderer shapeRenderer;
+    private ParticleEffect glassBreak;
     private NPC npc;
 
     private int currentLevel;
@@ -50,9 +52,9 @@ public class TransformationGame extends ApplicationAdapter {
         batch = new SpriteBatch();
 
         camera = new OrthographicCamera();
-
-        loadLevel("Assets/Assets/game_level_1.tmx");
         currentLevel = 1;
+        loadLevel();
+
 
         //calculating map size
         float mapWidth = map.getProperties().get("width", Integer.class) * map.getProperties().get("tilewidth", Integer.class);
@@ -68,16 +70,24 @@ public class TransformationGame extends ApplicationAdapter {
 
         renderer = new OrthogonalTiledMapRenderer(map, 1f);
         shapeRenderer = new ShapeRenderer();
+
+        glassBreak = new ParticleEffect();
+        // The second argument is the directory where the 'particle.png' is located
+        glassBreak.load(Gdx.files.internal("bottle_shatter.p"), Gdx.files.internal(""));
     }
 
     @Override
     public void render() {
         float delta = Gdx.graphics.getDeltaTime();
-        myPlayer.update(delta, myPhysics);
-        npc.update(delta);
+        myPlayer.update(delta, myPhysics, currentLevel);
+        npc.update(delta, myPhysics);
+
+        if (currentLevel == 1)
+            glassBreak.update(delta);
 
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
-        checkLevel1Conditions(myPlayer);
+        if (currentLevel == 1)
+            checkLevel1Conditions();
 
         renderer.setView(camera);
         renderer.render();
@@ -86,11 +96,14 @@ public class TransformationGame extends ApplicationAdapter {
         renderMap();
 
         batch.begin();
+        npc.draw(batch);
         for (MimicForm transformable : FormFactory.getAllForms()){
             transformable.draw(batch);
         }
-        npc.draw(batch);
+
         myPlayer.draw(batch);
+        if (currentLevel == 1)
+            glassBreak.draw(batch);
         batch.end();
 
         //showing all rectangles and other shapes in tiled vs in jbump
@@ -105,8 +118,12 @@ public class TransformationGame extends ApplicationAdapter {
     }
 
     /*loads your level map and creates new jbump world**/
-    public void loadLevel(String mapPath){
+    public void loadLevel(){
+        String mapPath = null;
 
+        if (currentLevel== 1){
+            mapPath = "Assets/Assets/game_level_1.tmx";
+        }
         //ensures no error occurs if this is the first map being loaded
         if (map != null) map.dispose();
 
@@ -129,31 +146,88 @@ public class TransformationGame extends ApplicationAdapter {
         myPlayer.x = spawnX;
         myPlayer.y = spawnY;
 
+
+        //creating our physics engine object
+        myPhysics = new Physics(myPlayer, map);
+
         //placing our npc at the NPC spawn point
         spawn = map.getLayers().get("NPC").getObjects().get(0);
         spawnX = spawn.getProperties().get("x", Float.class);
         spawnY = spawn.getProperties().get("y", Float.class);
-        npc = new NPC(spawnX,spawnY,"LeftWalk.png","LeftIdle.png");
 
-        //creating our physics engine object
-        myPhysics = new Physics(myPlayer, map);
+        npc = new NPC(spawnX,spawnY,"LeftWalk.png","LeftIdle.png",myPhysics);
+
     }
 
-    public void checkLevel1Conditions(Player myPlayer){
-
+    public void checkLevel1Conditions(){
+        // retrieve the bottle and fuel form instances from the factory
         BottleForm bottle = (BottleForm) FormFactory.get("BottleForm");
+        FuelForm fuel = (FuelForm) FormFactory.get("FuelForm");
+
+        // exit if the bottle instance is missing
         if (bottle == null) return;
 
-        if ((npc.targetX != -1) && (bottle.isTouchingGround(myPhysics))){
-            npc.targetX = bottle.x;
-            npc.state = NPC.State.WALKING;
+        // if the bottle is not broken then
+        if (!bottle.isBroken) {
+            // if npc is not at target then check if bottle is on the ground (breaks on ground), if so move npc
+            if ((npc.targetX != -1) && (bottle.isTouchingGround(myPlayer, myPhysics))) {
+                // position and trigger the glass breaking particle effect
+                glassBreak.setPosition(bottle.x, bottle.y + 20);
+                glassBreak.start();
+
+                // update npc target coordinates and switch state to walking
+                npc.targetX = bottle.x;
+                npc.state = NPC.State.WALKING;
+
+                // remove the physical hitbox and clear the sprite for the bottle
+                myPhysics.world.remove(HitboxFactory.getHitbox("BottleForm"));
+                bottle.sprite = null;
+            }
         }
 
+        // if the fuel bottle is not broken yet then check for collisions
+        if (!fuel.isBroken){
+            fuel.checkHitNpc(npc, myPlayer, myPhysics);
+
+            // handle logic for when the fuel bottle breaks upon impact
+            if (fuel.isBroken){
+                // play breaking effect and set the npc status to wet
+                glassBreak.setPosition(fuel.x, fuel.y + 20);
+                glassBreak.start();
+                npc.setWet(true);
+
+                // remove the fuel hitbox from the physics world and clear its sprite
+                myPhysics.world.remove(HitboxFactory.getHitbox("FuelForm"));
+                fuel.sprite = null;
+            }
+        }
+
+        // check if the player is currently in the stove form
         if (myPlayer.currForm.formName.equals("StoveForm")){
-            System.out.println("O for Open");
+
+            StoveForm stove = (StoveForm) myPlayer.currForm;
+
+            // handle the stove door state and input
+            if (!stove.doorOpen) {
+                // notify player to open the door and check for key press
+                System.out.println("O for Open");
+                if (Gdx.input.isKeyJustPressed(Input.Keys.O))
+                    stove.open_stove();
+            }
+            else{
+                // if the conditions are met allow the player to ignite the fuel
+                if (bottle.isBroken && npc.wet){
+                    // notify player to fire and check for key press
+                    System.out.println("Press F to FiRe!!!!");
+                    if (Gdx.input.isKeyJustPressed(Input.Keys.F)) {
+                        // set the fire target location and activate the fire state
+                        stove.fireTargetx = bottle.x;
+                        stove.setFire(true);
+                    }
+                }
+            }
+
         }
-
-
     }
 
     /** to view tiled rectangles */
