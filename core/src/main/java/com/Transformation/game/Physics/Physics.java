@@ -40,13 +40,14 @@ public class Physics {
             if (other.userData.equals("BaseForm"))
                 return null;
 
+            if (other.userData.equals("sensor")) return null;
+
             return Response.slide;
         }
     };
 
-
     //constructor
-    public Physics(Player myPlayer, TiledMap map){
+    public Physics(Player myPlayer, TiledMap map,int currentLevel){
 
         //adding our player hitbox to our jbump world
         world.add(myPlayer.hitbox, myPlayer.x, myPlayer.y,
@@ -56,6 +57,7 @@ public class Physics {
         loadWalls(map);
         loadTransformables(map);
 
+        if (currentLevel == 0) loadSensors(map);
         //adding player's hitbox (which is currently BaseForm) to HitboxFactory
         HitboxFactory.loadIndividualHitbox(myPlayer.hitbox);
     }
@@ -153,6 +155,26 @@ public class Physics {
         //loading all transformables and their hitboxes in their respective factories (registries)
         FormFactory.loadLevelRegistry(neededObjects);
         HitboxFactory.loadHitboxes(hitboxes);
+    }
+
+    /** loads all the region sensors from TILED and adds to jbump world*/
+    public void loadSensors(TiledMap map){
+        MapLayer transformablesLayer = map.getLayers().get("Sensors");
+        MapObjects objects = transformablesLayer.getObjects();
+
+        Item<String> newItem;
+        //looping through all the objects and adding to jbump
+        for (MapObject object : objects) {
+            if (object instanceof RectangleMapObject) {
+
+                Rectangle rect = ((RectangleMapObject) object).getRectangle();
+
+               newItem = new Item<>("sensor");
+
+                //finally, adding our new hitbox to out jbump world
+                world.add(newItem, rect.x, rect.y, rect.width, rect.height);
+            }
+        }
     }
 
     public String getNearbyTransformable(Player player, int currentLevel) {

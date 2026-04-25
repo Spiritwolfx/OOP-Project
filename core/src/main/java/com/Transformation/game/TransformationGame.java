@@ -52,7 +52,7 @@ public class TransformationGame extends ApplicationAdapter {
         batch = new SpriteBatch();
 
         camera = new OrthographicCamera();
-        currentLevel = 1;
+        currentLevel = 0;
         loadLevel();
 
 
@@ -80,7 +80,8 @@ public class TransformationGame extends ApplicationAdapter {
     public void render() {
         float delta = Gdx.graphics.getDeltaTime();
         myPlayer.update(delta, myPhysics, currentLevel);
-        npc.update(delta, myPhysics);
+        if (npc != null)
+            npc.update(delta, myPhysics);
 
         if (currentLevel == 1)
             glassBreak.update(delta);
@@ -96,7 +97,8 @@ public class TransformationGame extends ApplicationAdapter {
         renderMap();
 
         batch.begin();
-        npc.draw(batch);
+        if (npc != null)
+            npc.draw(batch);
         for (MimicForm transformable : FormFactory.getAllForms()){
             transformable.draw(batch);
         }
@@ -120,10 +122,20 @@ public class TransformationGame extends ApplicationAdapter {
     /*loads your level map and creates new jbump world**/
     public void loadLevel(){
         String mapPath = null;
-
-        if (currentLevel== 1){
-            mapPath = "Assets/Assets/game_level_1.tmx";
+        switch (currentLevel) {
+            case 0:
+                mapPath = "Assets/Assets/game.tmx";
+                break;
+            case 1:
+                mapPath = "Assets/Assets/game_level_1.tmx";
+            case 2:
+                mapPath = "Assets/Assets/game_level_2tmx.tmx";
+            case 3:
+                mapPath = "Assets/Assets/game_level_3.tmx";
+            case 4:
+                mapPath = "Assets/Assets/game_level_4.tmx";
         }
+
         //ensures no error occurs if this is the first map being loaded
         if (map != null) map.dispose();
 
@@ -148,15 +160,16 @@ public class TransformationGame extends ApplicationAdapter {
 
 
         //creating our physics engine object
-        myPhysics = new Physics(myPlayer, map);
+        myPhysics = new Physics(myPlayer, map,currentLevel);
 
-        //placing our npc at the NPC spawn point
-        spawn = map.getLayers().get("NPC").getObjects().get(0);
-        spawnX = spawn.getProperties().get("x", Float.class);
-        spawnY = spawn.getProperties().get("y", Float.class);
+        if (currentLevel != 0) {
+            //placing our npc at the NPC spawn point
+            spawn = map.getLayers().get("NPC").getObjects().get(0);
+            spawnX = spawn.getProperties().get("x", Float.class);
+            spawnY = spawn.getProperties().get("y", Float.class);
 
-        npc = new NPC(spawnX,spawnY,"LeftWalk.png","LeftIdle.png",myPhysics);
-
+            npc = new NPC(spawnX, spawnY, "LeftWalk.png", "LeftIdle.png", myPhysics);
+        }
     }
 
     public void checkLevel1Conditions(){

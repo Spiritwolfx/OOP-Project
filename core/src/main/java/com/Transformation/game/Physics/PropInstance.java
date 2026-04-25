@@ -15,4 +15,5 @@ public class PropInstance {
         this.width = width;
         this.height = height;
     }
+
 }
