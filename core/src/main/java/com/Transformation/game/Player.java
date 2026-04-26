@@ -126,18 +126,19 @@ public class Player {
                 velY = 0; // stop falling
             }
         }
-        // transform — press E near a transformable object
+        //transform — press E near a transformable object
         if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
-            String formName = physics.getNearbyTransformable(this,currentLevel);
-            System.out.println("Form Name:" + formName);
-            if (!currForm.formName.equals("BaseForm") && formName == null) {
-                // if player is not in baseForm then change to baseForm
+            if (!currForm.formName.equals("BaseForm")) {
+                //always untransform back to ghost first, no matter what
                 if (isGrounded)
                     changeForm("BaseForm", physics);
-            }
-            else if (formName != null) {
-                // else put player in nearest transformable form
+            } else {
+                //only transform if we're already the ghost
+                String formName = physics.getNearbyTransformable(this, currentLevel);
+                System.out.println("Form Name:" + formName);
+                if (formName != null) {
                     changeForm(formName, physics);
+                }
             }
         }
 
