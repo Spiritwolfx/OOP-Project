@@ -10,6 +10,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -33,6 +34,14 @@ import java.util.Set;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class TransformationGame extends ApplicationAdapter {
+    private enum GameState { INTRO, PLAYING, FAILED }
+    private GameState gameState = GameState.INTRO;
+
+
+    //if you want to set a level timer
+//    private float failTimer = 0f; // counts time to detect failure
+//    private static final float FAIL_TIME_LIMIT = 10f; // 2 minutes to complete level
+
     private SpriteBatch batch;
 
     private TiledMap map;
@@ -45,6 +54,11 @@ public class TransformationGame extends ApplicationAdapter {
     private ParticleEffect glassBreak;
     private NPC npc;
 
+    //HUD and text
+    private BitmapFont font;
+    private String hudMessage = "";
+    private String failReason = "";
+
     private int currentLevel;
 
     @Override
@@ -55,6 +69,10 @@ public class TransformationGame extends ApplicationAdapter {
         currentLevel = 1;
         loadLevel();
 
+        //load text
+        font = new BitmapFont();
+        font.getData().setScale(1.5f);
+        font.setColor(Color.WHITE);
 
         //calculating map size
         float mapWidth = map.getProperties().get("width", Integer.class) * map.getProperties().get("tilewidth", Integer.class);
@@ -79,15 +97,35 @@ public class TransformationGame extends ApplicationAdapter {
     @Override
     public void render() {
         float delta = Gdx.graphics.getDeltaTime();
+        ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
+
+        if (gameState == GameState.INTRO) {
+            drawIntroScreen();
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+                gameState = GameState.PLAYING;
+            }
+            return; // don't update game logic during intro
+        }
+
+        if (gameState == GameState.FAILED) {
+            drawFailScreen();
+            if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+                restartLevel();
+            }
+            return;
+        }
+
         myPlayer.update(delta, myPhysics, currentLevel);
         npc.update(delta, myPhysics);
 
-        if (currentLevel == 1)
-            glassBreak.update(delta);
 
-        ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
-        if (currentLevel == 1)
+//        ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
+        if (currentLevel == 1) {
+            glassBreak.update(delta);
             checkLevel1Conditions();
+            checkLevel1Fail();
+        }
+
 
         renderer.setView(camera);
         renderer.render();
@@ -109,12 +147,65 @@ public class TransformationGame extends ApplicationAdapter {
         //showing all rectangles and other shapes in tiled vs in jbump
         showTiledShapes();
         showJbumpWorld();
+
+        //draw hud messages
+        OrthographicCamera hudCamera = new OrthographicCamera();
+        hudCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.setProjectionMatrix(hudCamera.combined);
+        batch.begin();
+        font.draw(batch, hudMessage, 20, Gdx.graphics.getHeight() - 20);
+        batch.end();
+
+    }
+
+    private void checkLevel1Fail() {
+        BottleForm bottle = (BottleForm) FormFactory.get("BottleForm");
+        FuelForm fuel = (FuelForm) FormFactory.get("FuelForm");
+        StoveForm stove = (StoveForm) FormFactory.get("StoveForm");
+
+//        // fail if time runs out
+//        if (failTimer >= FAIL_TIME_LIMIT) {
+//            failReason = "You ran out of time!";
+//            gameState = GameState.FAILED;
+//            return;
+//        }
+
+        // bottle broke — wait for NPC to walk to it, then check if too far from stove
+        if (bottle != null && bottle.isBroken && stove != null) {
+            float bottleToStoveDist = Math.abs(bottle.x - stove.x);
+            float npcToBottleDist = Math.abs(npc.getX() - bottle.x);
+
+            // NPC has arrived at bottle position
+            if (npcToBottleDist < 100f && bottleToStoveDist > 300f) {
+                failReason = "The bottle was too far from the stove!\nThe detective investigated but smelled nothing.";
+                gameState = GameState.FAILED;
+                return;
+            }
+        }
+
+        // fuel bottle hit ground but missed NPC
+        if (fuel != null && fuel.isBroken && !npc.wet) {
+            failReason = "The fuel bottle missed the detective!\nHe isn't flammable.";
+            gameState = GameState.FAILED;
+        }
+
+        // fail if bottle dropped too far from stove
+        if (bottle != null && bottle.isBroken) {
+            if (stove != null) {
+                float dist = Math.abs(bottle.x - stove.x);
+                if (dist > 300f) { // too far from stove
+                    failReason = "The bottle broke too far from the stove!\nThe detective won't investigate.";
+                    gameState = GameState.FAILED;
+                }
+            }
+        }
     }
 
     @Override
     public void dispose() {
         batch.dispose();
         shapeRenderer.dispose();
+        font.dispose();
     }
 
     /*loads your level map and creates new jbump world**/
@@ -160,6 +251,8 @@ public class TransformationGame extends ApplicationAdapter {
     }
 
     public void checkLevel1Conditions(){
+        setMessage(""); // initialize messages
+
         // retrieve the bottle and fuel form instances from the factory
         BottleForm bottle = (BottleForm) FormFactory.get("BottleForm");
         FuelForm fuel = (FuelForm) FormFactory.get("FuelForm");
@@ -211,6 +304,7 @@ public class TransformationGame extends ApplicationAdapter {
             if (!stove.doorOpen) {
                 // notify player to open the door and check for key press
                 System.out.println("O for Open");
+                setMessage("Press O to open the stove door");
                 if (Gdx.input.isKeyJustPressed(Input.Keys.O))
                     stove.open_stove();
             }
@@ -219,6 +313,7 @@ public class TransformationGame extends ApplicationAdapter {
                 if (bottle.isBroken && npc.wet){
                     // notify player to fire and check for key press
                     System.out.println("Press F to FiRe!!!!");
+                    setMessage("Press F to ignite!");
                     if (Gdx.input.isKeyJustPressed(Input.Keys.F)) {
                         // set the fire target location and activate the fire state
                         stove.fireTargetx = bottle.x;
@@ -322,6 +417,86 @@ public class TransformationGame extends ApplicationAdapter {
         }
 
         batch.end();
+    }
+
+    private void drawIntroScreen() {
+        OrthographicCamera hudCamera = new OrthographicCamera();
+        hudCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        // draw dark background box
+        shapeRenderer.setProjectionMatrix(hudCamera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(new Color(0, 0, 0, 0.8f));
+        shapeRenderer.rect(50, 110, Gdx.graphics.getWidth() - 150, Gdx.graphics.getHeight() - 150);
+        shapeRenderer.end();
+
+        // draw border
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(Color.WHITE);
+        shapeRenderer.rect(50, 110, Gdx.graphics.getWidth() - 150, Gdx.graphics.getHeight() - 150);
+        shapeRenderer.end();
+
+        // draw text
+        batch.setProjectionMatrix(hudCamera.combined);
+        int h = Gdx.graphics.getHeight();
+        int w = Gdx.graphics.getWidth();
+
+        batch.begin();
+        font.setColor(Color.YELLOW);
+        font.draw(batch, "LEVEL 1 - THE HAUNTING", w * 0.1f, h * 0.88f);
+
+        font.setColor(Color.WHITE);
+        font.draw(batch, "Your mission:", w * 0.1f, h * 0.78f);
+        font.draw(batch, "1. Transform into the BOTTLE on the shelf", w * 0.1f, h * 0.70f);
+        font.draw(batch, "   and drop it near the STOVE.", w * 0.1f, h * 0.64f);
+        font.draw(batch, "2. The detective will walk over to investigate.", w * 0.1f, h * 0.57f);
+        font.draw(batch, "3. Transform into the FUEL BOTTLE", w * 0.1f, h * 0.50f);
+        font.draw(batch, "   and drop it ON the detective.", w * 0.1f, h * 0.44f);
+        font.draw(batch, "4. Get into the STOVE and press O to open,", w * 0.1f, h * 0.37f);
+        font.draw(batch, "   then press F to fire!", w * 0.1f, h * 0.31f);
+
+        font.setColor(Color.GREEN);
+        font.draw(batch, "Press ENTER to begin...", w * 0.1f, h * 0.15f);
+        batch.end();
+
+        font.setColor(Color.WHITE); // reset color
+    }
+
+    private void drawFailScreen() {
+        OrthographicCamera hudCamera = new OrthographicCamera();
+        hudCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        shapeRenderer.setProjectionMatrix(hudCamera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(new Color(0.5f, 0, 0, 0.9f));
+        shapeRenderer.rect(100, 100, Gdx.graphics.getWidth() - 200, Gdx.graphics.getHeight() - 200);
+        shapeRenderer.end();
+
+        batch.setProjectionMatrix(hudCamera.combined);
+        batch.begin();
+        font.setColor(Color.RED);
+        font.draw(batch, "MISSION FAILED", 200, Gdx.graphics.getHeight() - 200);
+        font.setColor(Color.WHITE);
+        font.draw(batch, failReason, 150, Gdx.graphics.getHeight() - 300);
+        font.setColor(Color.YELLOW);
+        font.draw(batch, "Press R to restart", 150, 160);
+        batch.end();
+
+        font.setColor(Color.WHITE);
+    }
+
+    //method to set state of message
+    public void setMessage(String message) {
+        hudMessage = message;
+    }
+
+    private void restartLevel() {
+//        failTimer = 0f;
+        failReason = "";
+        hudMessage = "";
+        gameState = GameState.INTRO; // show intro again, or set to PLAYING to skip
+        loadLevel();
+        renderer = new OrthogonalTiledMapRenderer(map, 1f);
     }
 }
 

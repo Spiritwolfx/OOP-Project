@@ -54,30 +54,47 @@ public class FuelForm extends MimicForm {
     }
 
     public void checkHitNpc(NPC npc, Player player, Physics physics){
-        // project the bottle's movement 1 unit down to check for collision
-        Response.Result check = physics.world.check(
-            HitboxFactory.getHitbox(this.formName),
-            this.x,
-            this.y - 1, // Checking downwards
-            physics.heistFilter
-        );
+//        // project the bottle's movement 1 unit down to check for collision
+//        Response.Result check = physics.world.check(
+//            HitboxFactory.getHitbox(this.formName),
+//            this.x,
+//            this.y - 1, // Checking downwards
+//            physics.heistFilter
+//        );
+//
+//        // loop through what we might have hit
+//        for (int i = 0; i < check.projectedCollisions.size(); i++) {
+//            Collision col = check.projectedCollisions.get(i);
+//
+//            // check if the 'other' object is the NPC
+//            String type = (String) col.other.userData;
+//
+//            if (type != null && type.equals("NPC")) {
+//                System.out.println("HITTT - NPC Soaked!");
+//
+//                this.speed = 0f;    // stop the bottle
+//                this.isBroken = true;
+//                player.changeForm("BaseForm",physics);
+//
+//            }
+//        }
+        // get NPC position
+        float npcX = npc.getX();
+        float npcY = npc.getY();
 
-        // loop through what we might have hit
-        for (int i = 0; i < check.projectedCollisions.size(); i++) {
-            Collision col = check.projectedCollisions.get(i);
+        // check horizontal and vertical proximity
+        float dx = Math.abs((this.x + this.width / 2) - (npcX + 128));
+        float dy = Math.abs((this.y + this.height / 2) - (npcY + 128));
 
-            // check if the 'other' object is the NPC
-            String type = (String) col.other.userData;
-
-            if (type != null && type.equals("NPC")) {
-                System.out.println("HITTT - NPC Soaked!");
-
-                this.speed = 0f;    // stop the bottle
-                this.isBroken = true;
-                player.changeForm("BaseForm",physics);
-
-            }
+        // if close enough AND touching ground = hits NPC
+        if (dx < 150f && dy < 200f && isTouchingGround(player, physics)) {
+            System.out.println("HITTT - NPC Soaked!");
+            this.speed = 0f;
+            this.isBroken = true;
+            player.changeForm("BaseForm", physics);
         }
+
+
 
 
     }
