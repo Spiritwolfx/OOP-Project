@@ -1,39 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="17">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="9" nextobjectid="19">
  <tileset firstgid="1" source="../tilesets/collision.tsx"/>
  <tileset firstgid="1981" source="../tilesets/Interior.tsx"/>
  <tileset firstgid="2813" source="../tilesets/cabinets_BA.tsx"/>
  <tileset firstgid="2818" source="../tilesets/fixtures_BA.tsx"/>
  <tileset firstgid="2820" source="../tilesets/cabinets.tsx"/>
  <tileset firstgid="2826" source="../tilesets/windows_and_doors2.tsx"/>
- <layer id="2" name="Floors and wall" width="30" height="20">
+ <layer id="2" name="Floors and wall" width="30" height="20" locked="1">
   <data encoding="base64" compression="zlib">
    eJxjYBgF9ABKnAwMypz0FxsF9AHExocdJ3b2aPwObkBq/NrhiXdSzBsF+MF/LuqYM1o+D2/Az8HAIADEghz0FQcAbJAKzQ==
   </data>
  </layer>
- <layer id="4" name="Window" width="30" height="20">
+ <layer id="4" name="Window" width="30" height="20" locked="1">
   <data encoding="base64" compression="zlib">
    eJxjYBgFAwlucQy0C4YXmCPAwDAXiOch0fMFaG/vHaAdd4H4HhJ9X4D28YvLXnwgCCgfDMQhQBxKZtiQY+8koPxkIJ4CxFPpaO8loPxlIL4CxFepbC+++BUSZGAQBmIRIBYVpK69tAYjzV4ZYPzIArEcEi0vOFo+jwLKAACs+D11
   </data>
  </layer>
- <objectgroup id="3" name="Objects">
+ <objectgroup id="3" name="Objects" locked="1">
   <object id="1" gid="2815" x="165.667" y="275" width="70.6667" height="121.333"/>
   <object id="2" gid="2818" x="318" y="292" width="146.667" height="91"/>
   <object id="3" gid="2819" x="185.833" y="278.833" width="108" height="72.6667"/>
   <object id="4" gid="2822" x="192" y="269.5" width="96" height="60"/>
  </objectgroup>
- <layer id="1" name="Collision" width="30" height="20" visible="0">
+ <objectgroup id="7" name="Transformables" visible="0" locked="1">
+  <object id="17" x="171.024" y="192.89" width="23.428" height="73.4076">
+   <properties>
+    <property name="formName" value="Cabinet"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="8" name="NPC" visible="0" locked="1">
+  <object id="18" x="400.618" y="258.489">
+   <point/>
+  </object>
+ </objectgroup>
+ <layer id="1" name="Collision" width="30" height="20" visible="0" locked="1">
   <data encoding="base64" compression="zlib">
    eJzF1ssVwVAAhOErskgBStAA4v0KgngslKAEBVgoQAlKUIIClKAEJVj6p4k7c86//raThRBaSQht6lBOXepRnwY0pBGNaUJTmtGcClrQklZU0po2tKWKdrSnAx0pwyxD/Mm8GVyZL4Mr82dwZea1+K7Mi8GV+TS4Mr8GV2Yzie/KPBtcmQ+DK/NjcGU26vFdmSeDK/NucGW+Da7MNI3vyiwMrsxrGv/nyPwD014gtQ==
   </data>
  </layer>
- <objectgroup id="5" name="Collision Layer" visible="0">
+ <objectgroup id="5" name="Collision Layer">
   <object id="10" x="0" y="0" width="480" height="16"/>
   <object id="11" x="464" y="16" width="16" height="304"/>
-  <object id="13" x="0" y="304" width="464" height="16"/>
+  <object id="13" x="0" y="275.886" width="464" height="44.1136"/>
   <object id="14" x="0" y="16" width="16" height="288"/>
  </objectgroup>
- <objectgroup id="6" name="spawn" visible="0">
+ <objectgroup id="6" name="spawn" visible="0" locked="1">
   <object id="16" x="48" y="256">
    <point/>
   </object>

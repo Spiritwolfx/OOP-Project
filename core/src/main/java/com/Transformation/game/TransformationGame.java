@@ -28,8 +28,8 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.dongbat.jbump.Item;
 import com.dongbat.jbump.Rect;
 
-import java.text.Normalizer;
 import java.util.Set;
+
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class TransformationGame extends ApplicationAdapter {
@@ -56,20 +56,7 @@ public class TransformationGame extends ApplicationAdapter {
         loadLevel();
 
 
-        //calculating map size
-        float mapWidth = map.getProperties().get("width", Integer.class) * map.getProperties().get("tilewidth", Integer.class);
-        float mapHeight = map.getProperties().get("height", Integer.class) * map.getProperties().get("tileheight", Integer.class);
 
-        //setting camera to show the entire map
-        camera.setToOrtho(false, mapWidth, mapHeight);
-
-        //center the camera on the map's middle
-        camera.position.set(mapWidth / 2f, mapHeight / 2f, 0);
-        camera.update();
-
-
-        renderer = new OrthogonalTiledMapRenderer(map, 1f);
-        shapeRenderer = new ShapeRenderer();
 
         glassBreak = new ParticleEffect();
         // The second argument is the directory where the 'particle.png' is located
@@ -87,8 +74,24 @@ public class TransformationGame extends ApplicationAdapter {
             glassBreak.update(delta);
 
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
-        if (currentLevel == 1)
-            checkLevel1Conditions();
+        switch(currentLevel){
+            case 0:
+                checkLevel0Conditions(myPhysics);
+                break;
+            case 1:
+                checkLevel1Conditions();
+                break;
+            case 2:
+                System.out.println("Level 2");
+                break;
+            case 3:
+                System.out.println("Level 3");
+                break;
+            case 4:
+                System.out.println("Level 4");
+                break;
+        }
+
 
         renderer.setView(camera);
         renderer.render();
@@ -128,18 +131,37 @@ public class TransformationGame extends ApplicationAdapter {
                 break;
             case 1:
                 mapPath = "Assets/Assets/game_level_1.tmx";
+                break;
             case 2:
                 mapPath = "Assets/Assets/game_level_2tmx.tmx";
+                break;
             case 3:
                 mapPath = "Assets/Assets/game_level_3.tmx";
+                break;
             case 4:
                 mapPath = "Assets/Assets/game_level_4.tmx";
+                break;
         }
 
         //ensures no error occurs if this is the first map being loaded
         if (map != null) map.dispose();
 
         map = new TmxMapLoader().load(mapPath);
+
+        //calculating map size
+        float mapWidth = map.getProperties().get("width", Integer.class) * map.getProperties().get("tilewidth", Integer.class);
+        float mapHeight = map.getProperties().get("height", Integer.class) * map.getProperties().get("tileheight", Integer.class);
+
+        //setting camera to show the entire map
+        camera.setToOrtho(false, mapWidth, mapHeight);
+
+        //center the camera on the map's middle
+        camera.position.set(mapWidth / 2f, mapHeight / 2f, 0);
+        camera.update();
+
+
+        renderer = new OrthogonalTiledMapRenderer(map, 1f);
+        shapeRenderer = new ShapeRenderer();
 
         //creating our player
         myPlayer = new Player(0, 0);
@@ -160,7 +182,7 @@ public class TransformationGame extends ApplicationAdapter {
 
 
         //creating our physics engine object
-        myPhysics = new Physics(myPlayer, map,currentLevel);
+        myPhysics = new Physics(myPlayer, map);
 
         if (currentLevel != 0) {
             //placing our npc at the NPC spawn point
@@ -169,6 +191,61 @@ public class TransformationGame extends ApplicationAdapter {
             spawnY = spawn.getProperties().get("y", Float.class);
 
             npc = new NPC(spawnX, spawnY, "LeftWalk.png", "LeftIdle.png", myPhysics);
+        }
+    }
+
+    public void checkLevel0Conditions(Physics physics){
+
+        if ((myPlayer.x <= 500) && (myPlayer.x >= 455) && (myPlayer.y<= 65)){
+            if (Gdx.input.isKeyPressed(Input.Keys.U)){
+                physics.world.update(
+                    myPlayer.hitbox,
+                    421.7f,
+                    364f,
+                    myPlayer.getWidth(),
+                    myPlayer.getHeight()
+                );
+                // 2. Synchronize the Player's visual coordinates
+                myPlayer.x = 421.7f;
+                myPlayer.y = 364f;
+            }
+
+        }
+        if ((myPlayer.x <= 482) && (myPlayer.x >= 412) && (myPlayer.y > 300)){
+            if (Gdx.input.isKeyPressed(Input.Keys.J)){
+                physics.world.update(
+                    myPlayer.hitbox,
+                    472f,
+                    65f,
+                    myPlayer.getWidth(),
+                    myPlayer.getHeight()
+                );
+                // 2. Synchronize the Player's visual coordinates
+                myPlayer.x = 472f;
+                myPlayer.y = 65f;
+            }
+
+        }
+        if (myPlayer.y > 300){
+            if (myPlayer.x < 349) {
+                currentLevel = 1;
+                loadLevel();
+                return;
+            }
+            if (myPlayer.x > 510) {
+                currentLevel = 2;
+                loadLevel();
+                return;
+            }
+        }
+        if (myPlayer.y <= 65){
+            if(myPlayer.x < 380){
+                System.out.println("Level 3");
+                return;
+            }
+            if (myPlayer.x >= 610){
+                System.out.println("Level 4");
+            }
         }
     }
 
