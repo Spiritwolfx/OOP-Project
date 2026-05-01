@@ -109,6 +109,7 @@ public class Player {
         this.y = result.goalY;
         sprite.setPosition(x, y);
 
+
         //update current form's position to match player
         if (!currForm.formName.equals("BaseForm")) {
             currForm.x = x;

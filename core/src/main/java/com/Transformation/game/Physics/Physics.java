@@ -1,6 +1,7 @@
 package com.Transformation.game.Physics;
 
 import com.Transformation.game.Forms.BottleForm;
+import com.Transformation.game.Forms.CabinetForm;
 import com.Transformation.game.Forms.FormFactory;
 import com.Transformation.game.Player;
 import com.badlogic.gdx.maps.MapLayer;
@@ -28,7 +29,9 @@ public class Physics {
             if(item.userData.equals("BottleForm") || item.userData.equals("FuelForm"))
                 if (other.userData.equals("NPC")) return Response.slide;
 
-            if (other.userData.equals("NPC")) return null;
+            if ( (other.userData.equals("BaseForm")) ||  (other.userData.equals("NPC"))
+                || (other.userData.equals("HairDryerForm")))
+                return null;
 
             // If it's not a wall, then it is a transformable (as we are the player, cannot collide with ourselves)
             if (other.userData.equals("wall") || other.userData.equals("floor") ) return Response.slide;
@@ -36,9 +39,6 @@ public class Physics {
             //ignoring transformables if we are ghost (BaseForm)
             //if (item.userData.equals("BaseForm"))
                 //return null;
-
-            if (other.userData.equals("BaseForm"))
-                return null;
 
 
             return Response.slide;
@@ -221,11 +221,19 @@ public class Physics {
 
     /** to check if the closest from can be turned into at this point of the level*/
     public String validClosestForm(String closestForm, int currentLevel){
+
+        // if bottle is not broken, then cannot turn into FuelForm
         if ((currentLevel == 1) && closestForm.equals("FuelForm")){
             if (((BottleForm) FormFactory.get("BottleForm")).isBroken){
                 return closestForm;
             }
             return null;
+        }
+        // if cabinet door is open, cannot turn into cabinet but can turn into hairdryer
+        else if ((currentLevel == 2) && closestForm.equals("CabinetForm")){
+            if (((CabinetForm) FormFactory.get("CabinetForm")).doorOpen){
+                return "HairDryerForm";
+            }
         }
         return closestForm;
     }

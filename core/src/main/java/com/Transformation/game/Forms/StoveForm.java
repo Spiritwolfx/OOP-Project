@@ -4,7 +4,6 @@ import com.Transformation.game.Player;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
@@ -45,7 +44,7 @@ public class StoveForm extends MimicForm {
 
 
 
-    public void open_stove(){
+    public void openStove(){
         this.textureName = "Assets/Assets/stove_open.png";
         loadSprite();
         doorOpen = true;

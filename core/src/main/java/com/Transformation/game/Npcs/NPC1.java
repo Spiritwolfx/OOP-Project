@@ -1,4 +1,4 @@
-package com.Transformation.game.Animations;
+package com.Transformation.game.Npcs;
 
 import com.Transformation.game.Physics.Physics;
 import com.badlogic.gdx.graphics.Color;
@@ -9,12 +9,10 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.dongbat.jbump.Item;
 
-public class NPC {
+public class NPC1 extends NPC{
     public enum State { IDLE,STANDING, WALKING }
     public State state = State.IDLE;
 
-    private Vector2 pos;
-    private float stateTime = 0;
     public float targetX;
     private Animation<TextureRegion> walkAnim;
     private Animation<TextureRegion> idleAnim;
@@ -25,7 +23,7 @@ public class NPC {
 
 
     // constructor that makes our animations as well
-    public NPC(float x, float y, String walkFile, String idleFile, Physics physics) {
+    public NPC1(float x, float y, String walkFile, String idleFile, Physics physics) {
         this.pos = new Vector2(x, y);
 
         // loading our animations frames image
@@ -44,7 +42,7 @@ public class NPC {
         }
 
         //finally, the animation is ready
-        this.walkAnim = new Animation<TextureRegion>(0.1f, frames);
+        this.walkAnim = new Animation<>(0.1f, frames);
 
         // now do the same for IDLE animation
         sheet = new Texture(idleFile);
@@ -61,7 +59,7 @@ public class NPC {
         }
 
         // finally IDLE animation done as well
-        this.idleAnim = new Animation<TextureRegion>(0.5f, frames);
+        this.idleAnim = new Animation<>(0.5f, frames);
 
         physics.world.add(this.hitbox, pos.x - 20 , pos.y , 60, 143);
     }
@@ -116,13 +114,5 @@ public class NPC {
         } else {
             this.tint.set(Color.WHITE);
         }
-    }
-
-    public float getX(){
-        return pos.x;
-    }
-
-    public float getY(){
-        return pos.y;
     }
 }

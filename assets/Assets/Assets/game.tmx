@@ -18,6 +18,7 @@
  <tileset firstgid="7106" source="../tilesets/table_rect_0.tsx"/>
  <tileset firstgid="7107" source="../tilesets/chair.tsx"/>
  <tileset firstgid="7108" source="../tilesets/interiors_demo.tsx"/>
+ <tileset firstgid="7133" source="../tilesets/HairDryerSetup.tsx"/>
  <layer id="1" name="Walls" width="60" height="40" locked="1">
   <data encoding="base64" compression="zlib">
    eJzt1uENhSAMBGCYw21MZBQndCZdQ/2PFCKlDXdfYuI9Y1JfKSEELFu0rmAstO/dI1YmmknL+reevdpcqploJiNmyGMmDMdiXYGud11bzxJnl8iH87ku6yKIQKxgmWgmqZCT8Lx37n2fqx/NyP5J+ev+T2Z/5801+w8aT/0ZkdFo7LfWPSzt+715Wz+5/0K6pPdLv2tn7Xn11j+Jxvmn5lzbs4aWc9kNhBBCjg==
@@ -91,5 +92,5 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="18" name="Transformables" visible="0" locked="1"/>
+ <objectgroup id="18" name="Transformables"/>
 </map>

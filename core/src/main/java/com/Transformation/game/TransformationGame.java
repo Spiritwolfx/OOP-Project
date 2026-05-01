@@ -1,7 +1,9 @@
 package com.Transformation.game;
 
-import com.Transformation.game.Animations.NPC;
+import com.Transformation.game.Npcs.NPC;
+import com.Transformation.game.Npcs.NPC1;
 import com.Transformation.game.Forms.*;
+import com.Transformation.game.Npcs.NPC2;
 import com.Transformation.game.Physics.HitboxFactory;
 import com.Transformation.game.Physics.Physics;
 import com.badlogic.gdx.ApplicationAdapter;
@@ -42,7 +44,7 @@ public class TransformationGame extends ApplicationAdapter {
     private Physics myPhysics;
     private Player myPlayer;
     private ShapeRenderer shapeRenderer;
-    private ParticleEffect glassBreak;
+    private ParticleEffect particleEffect;
     private NPC npc;
 
     private int currentLevel;
@@ -56,11 +58,6 @@ public class TransformationGame extends ApplicationAdapter {
         loadLevel();
 
 
-
-
-        glassBreak = new ParticleEffect();
-        // The second argument is the directory where the 'particle.png' is located
-        glassBreak.load(Gdx.files.internal("bottle_shatter.p"), Gdx.files.internal(""));
     }
 
     @Override
@@ -70,8 +67,8 @@ public class TransformationGame extends ApplicationAdapter {
         if (npc != null)
             npc.update(delta, myPhysics);
 
-        if (currentLevel == 1)
-            glassBreak.update(delta);
+        if (currentLevel == 1 || currentLevel == 2)
+            particleEffect.update(delta);
 
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
         switch(currentLevel){
@@ -82,7 +79,7 @@ public class TransformationGame extends ApplicationAdapter {
                 checkLevel1Conditions();
                 break;
             case 2:
-                System.out.println("Level 2");
+                checkLevel2Conditions();
                 break;
             case 3:
                 System.out.println("Level 3");
@@ -107,8 +104,8 @@ public class TransformationGame extends ApplicationAdapter {
         }
 
         myPlayer.draw(batch);
-        if (currentLevel == 1)
-            glassBreak.draw(batch);
+        if (currentLevel == 1 || currentLevel == 2)
+            particleEffect.draw(batch);
         batch.end();
 
         //showing all rectangles and other shapes in tiled vs in jbump
@@ -131,9 +128,17 @@ public class TransformationGame extends ApplicationAdapter {
                 break;
             case 1:
                 mapPath = "Assets/Assets/game_level_1.tmx";
+                particleEffect = new ParticleEffect();
+
+                // the second argument is the directory where the 'particle.png' is located
+                particleEffect.load(Gdx.files.internal("bottle_shatter.p"), Gdx.files.internal(""));
                 break;
             case 2:
                 mapPath = "Assets/Assets/game_level_2tmx.tmx";
+                particleEffect = new ParticleEffect();
+
+                // the second argument is the directory where the 'particle.png' is located
+                particleEffect.load(Gdx.files.internal("water_splash.p"), Gdx.files.internal(""));
                 break;
             case 3:
                 mapPath = "Assets/Assets/game_level_3.tmx";
@@ -190,7 +195,11 @@ public class TransformationGame extends ApplicationAdapter {
             spawnX = spawn.getProperties().get("x", Float.class);
             spawnY = spawn.getProperties().get("y", Float.class);
 
-            npc = new NPC(spawnX, spawnY, "LeftWalk.png", "LeftIdle.png", myPhysics);
+            if (currentLevel == 1)
+                npc = new NPC1(spawnX, spawnY, "LeftWalk.png", "LeftIdle.png", myPhysics);
+            else if (currentLevel == 2){
+                npc = new NPC2(spawnX,spawnY,"sleep.png");
+            }
         }
     }
 
@@ -257,17 +266,19 @@ public class TransformationGame extends ApplicationAdapter {
         // exit if the bottle instance is missing
         if (bottle == null) return;
 
+        NPC1 npc1 = (NPC1) npc;
         // if the bottle is not broken then
         if (!bottle.isBroken) {
+
             // if npc is not at target then check if bottle is on the ground (breaks on ground), if so move npc
-            if ((npc.targetX != -1) && (bottle.isTouchingGround(myPlayer, myPhysics))) {
+            if ((npc1.targetX != -1) && (bottle.isTouchingGround(myPlayer, myPhysics))) {
                 // position and trigger the glass breaking particle effect
-                glassBreak.setPosition(bottle.x, bottle.y + 20);
-                glassBreak.start();
+                particleEffect.setPosition(bottle.x, bottle.y + 20);
+                particleEffect.start();
 
                 // update npc target coordinates and switch state to walking
-                npc.targetX = bottle.x;
-                npc.state = NPC.State.WALKING;
+                npc1.targetX = bottle.x;
+                npc1.state = NPC1.State.WALKING;
 
                 // remove the physical hitbox and clear the sprite for the bottle
                 myPhysics.world.remove(HitboxFactory.getHitbox("BottleForm"));
@@ -277,14 +288,14 @@ public class TransformationGame extends ApplicationAdapter {
 
         // if the fuel bottle is not broken yet then check for collisions
         if (!fuel.isBroken){
-            fuel.checkHitNpc(npc, myPlayer, myPhysics);
+            fuel.checkHitNpc(myPlayer, myPhysics);
 
             // handle logic for when the fuel bottle breaks upon impact
             if (fuel.isBroken){
                 // play breaking effect and set the npc status to wet
-                glassBreak.setPosition(fuel.x, fuel.y + 20);
-                glassBreak.start();
-                npc.setWet(true);
+                particleEffect.setPosition(fuel.x, fuel.y + 20);
+                particleEffect.start();
+                npc1.setWet(true);
 
                 // remove the fuel hitbox from the physics world and clear its sprite
                 myPhysics.world.remove(HitboxFactory.getHitbox("FuelForm"));
@@ -302,11 +313,11 @@ public class TransformationGame extends ApplicationAdapter {
                 // notify player to open the door and check for key press
                 System.out.println("O for Open");
                 if (Gdx.input.isKeyJustPressed(Input.Keys.O))
-                    stove.open_stove();
+                    stove.openStove();
             }
             else{
                 // if the conditions are met allow the player to ignite the fuel
-                if (bottle.isBroken && npc.wet){
+                if (bottle.isBroken && npc1.wet){
                     // notify player to fire and check for key press
                     System.out.println("Press F to FiRe!!!!");
                     if (Gdx.input.isKeyJustPressed(Input.Keys.F)) {
@@ -318,6 +329,55 @@ public class TransformationGame extends ApplicationAdapter {
             }
 
         }
+    }
+
+    public void checkLevel2Conditions(){
+        // check if the player is currently in the cabinet form
+        if (myPlayer.currForm.formName.equals("CabinetForm")) {
+
+            CabinetForm cabinet = (CabinetForm) myPlayer.currForm;
+
+            // handle the cabinet door state and input
+            if (!cabinet.doorOpen) {
+                // notify player to open the door and check for key press
+                System.out.println("O for Open");
+                if (Gdx.input.isKeyJustPressed(Input.Keys.O)) {
+                    cabinet.openCabinet();
+                }
+            }
+            return;
+
+        }
+
+        if (myPlayer.currForm instanceof HairDryerForm){
+            HairDryerForm dryer = (HairDryerForm) myPlayer.currForm;
+            NPC2 npc2 = (NPC2) npc;
+            if (!dryer.isStart) {
+                // notify player to open the door and check for key press
+                System.out.println("S for Start");
+                if (Gdx.input.isKeyJustPressed(Input.Keys.S)) {
+                    dryer.isStart = true;
+                }
+            }
+
+            if (myPlayer.x > 349 && myPlayer.y < 98){
+                if (dryer.isStart){
+                    npc2.setShocked(true);
+                }
+                particleEffect.setPosition(myPlayer.x,98);
+                particleEffect.start();
+
+
+                myPlayer.changeForm("BaseForm",myPhysics);
+
+                // remove the physical hitbox and clear the sprite
+                myPhysics.world.remove(HitboxFactory.getHitbox("HairDryerForm"));
+                dryer.sprite = null;
+            }
+        }
+
+
+
     }
 
     /** to view tiled rectangles */

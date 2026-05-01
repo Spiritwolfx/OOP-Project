@@ -1,6 +1,6 @@
 package com.Transformation.game.Forms;
 
-import com.Transformation.game.Animations.NPC;
+import com.Transformation.game.Npcs.NPC1;
 import com.Transformation.game.Physics.HitboxFactory;
 import com.Transformation.game.Physics.Physics;
 import com.Transformation.game.Player;
@@ -53,7 +53,7 @@ public class FuelForm extends MimicForm {
         return isBroken;
     }
 
-    public void checkHitNpc(NPC npc, Player player, Physics physics){
+    public void checkHitNpc(Player player, Physics physics){
         // project the bottle's movement 1 unit down to check for collision
         Response.Result check = physics.world.check(
             HitboxFactory.getHitbox(this.formName),

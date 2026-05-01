@@ -29,6 +29,12 @@ public class FormFactory {
             if (prop.name.equals("StoveForm")) {
                 newForm = new StoveForm(prop.name, prop.x, prop.y, prop.width, prop.height);
             }
+            if (prop.name.equals("CabinetForm")) {
+                newForm = new CabinetForm(prop.name, prop.x, prop.y, prop.width, prop.height);
+            }
+            if (prop.name.equals("HairDryerForm")) {
+                newForm = new HairDryerForm(prop.name, prop.x, prop.y, prop.width, prop.height);
+            }
             // add more forms here as you build them
 
             if (newForm != null) {
