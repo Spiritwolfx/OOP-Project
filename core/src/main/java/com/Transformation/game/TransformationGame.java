@@ -12,6 +12,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -49,9 +50,24 @@ public class TransformationGame extends ApplicationAdapter {
 
     private int currentLevel;
 
+    private enum GameState { INTRO, PLAYING, TRANSITION, LEVEL_INFO, FAILED, WIN }
+    private GameState gameState = GameState.PLAYING;
+
+    private int targetLevel = -1;
+    private float transitionTimer = 0f;
+
+    private String failReason = "";
+    private String winMessage = "";
+
+    private BitmapFont font;
+
+    private static final float SPLASH_RADIUS = 80f;   // pixels – how close the fuel must land to the NPC
+
     @Override
     public void create() {
         batch = new SpriteBatch();
+
+        font = new BitmapFont(); // font loader
 
         camera = new OrthographicCamera();
         currentLevel = 0;
@@ -63,6 +79,52 @@ public class TransformationGame extends ApplicationAdapter {
     @Override
     public void render() {
         float delta = Gdx.graphics.getDeltaTime();
+        if (gameState == GameState.TRANSITION) {
+            transitionTimer -= delta;
+            drawTransitionScreen();
+
+            // Once the timer hits 0, load the level or go back to playing
+            if (transitionTimer <= 0) {
+                if (targetLevel == 1 || targetLevel == 2) {
+                    currentLevel = targetLevel;
+                    loadLevel();
+                    gameState = GameState.LEVEL_INFO;
+                } else {
+                    gameState = GameState.PLAYING;
+                }
+            }
+            return; // Stop rendering the rest of the game while transitioning
+        }
+
+        if (gameState == GameState.LEVEL_INFO) {
+            drawLevelInfoScreen();
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+                gameState = GameState.PLAYING;
+            }
+            return;
+        }
+
+        if (gameState == GameState.FAILED) {
+            drawFailScreen();
+            if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+                gameState = GameState.PLAYING;
+                // Notice we do NOT set currentLevel = 0 here anymore.
+                // It stays on the current level, and we just reload it:
+                loadLevel();
+            }
+            return;
+        }
+
+        if (gameState == GameState.WIN) {
+            drawWinScreen();
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+                currentLevel = 0;          // go back to hub
+                gameState = GameState.PLAYING;
+                loadLevel();
+            }
+            return;
+        }
+
         myPlayer.update(delta, myPhysics, currentLevel);
         if (npc != null)
             npc.update(delta, myPhysics);
@@ -77,6 +139,7 @@ public class TransformationGame extends ApplicationAdapter {
                 break;
             case 1:
                 checkLevel1Conditions();
+                checkLevel1Fail();
                 break;
             case 2:
                 checkLevel2Conditions();
@@ -99,11 +162,70 @@ public class TransformationGame extends ApplicationAdapter {
         batch.begin();
         if (npc != null)
             npc.draw(batch);
+//        for (MimicForm transformable : FormFactory.getAllForms()){
+//            transformable.draw(batch);
+//        }
         for (MimicForm transformable : FormFactory.getAllForms()){
-            transformable.draw(batch);
+            // Only draw if the sprite exists to prevent crashes
+            if (transformable.sprite != null) {
+                transformable.draw(batch);
+            }
         }
 
         myPlayer.draw(batch);
+        if (currentLevel == 0) {
+            font.setColor(Color.WHITE);
+            font.getData().setScale(2f); //make text slightly bigger
+
+            // --- Room Labels ---
+            // Level 1 (Upper Left)
+            drawOutlinedText(batch, font, "Level 1", 160, 490, Color.WHITE);
+
+            // Level 2 (Upper Right)
+            drawOutlinedText(batch, font, "Level 2", 700, 490, Color.WHITE);
+
+            // Level 3 (Lower Left - Coming Soon)
+            drawOutlinedText(batch, font, "Level 3", 160, 220, Color.LIGHT_GRAY);
+            font.getData().setScale(1.2f); // Shrink font for the subtext
+            drawOutlinedText(batch, font, "(Soon)", 164, 185, Color.GRAY);
+            font.getData().setScale(2f); // Reset back to big
+
+            // Level 4 (Lower Right - Coming Soon)
+            drawOutlinedText(batch, font, "Level 4", 670, 220, Color.LIGHT_GRAY);
+            font.getData().setScale(1.2f); // Shrink font for the subtext
+            drawOutlinedText(batch, font, "(Soon)", 674, 185, Color.GRAY);
+
+
+            font.getData().setScale(1.3f);
+            // Near bottom stairs
+            if ((myPlayer.x <= 500) && (myPlayer.x >= 455) && (myPlayer.y <= 65)) {
+                drawOutlinedText(batch, font, "Press U to go UP stairs", myPlayer.x - 60, myPlayer.y + 100, Color.WHITE);
+            }
+            // Near top stairs
+            if ((myPlayer.x <= 482) && (myPlayer.x >= 412) && (myPlayer.y > 300)) {
+                drawOutlinedText(batch, font, "Press J to go DOWN stairs", myPlayer.x - 70, myPlayer.y - 20, Color.WHITE);
+            }
+            font.getData().setScale(1f); // Reset scale
+        }
+        // Stove hints in Level 1
+        if (currentLevel == 1 && myPlayer.currForm.formName.equals("StoveForm")) {
+            StoveForm stove = (StoveForm) myPlayer.currForm;
+            BottleForm bottle = (BottleForm) FormFactory.get("BottleForm");
+            FuelForm fuel = (FuelForm) FormFactory.get("FuelForm");
+            NPC1 npc1 = (NPC1) npc;
+
+            if (bottle != null && fuel != null) {
+                font.getData().setScale(1.2f);
+                if (!stove.doorOpen) {
+                    drawOutlinedText(batch, font, "Press O to Open",
+                        stove.x + 30, stove.y + 120, Color.WHITE);
+                } else if (bottle.isBroken && npc1.wet) {
+                    drawOutlinedText(batch, font, "Press F to Fire",
+                        stove.x + 30, stove.y + 120, Color.ORANGE);
+                }
+                font.getData().setScale(1f); // reset
+            }
+        }
         if (currentLevel == 1 || currentLevel == 2)
             particleEffect.draw(batch);
         batch.end();
@@ -117,10 +239,15 @@ public class TransformationGame extends ApplicationAdapter {
     public void dispose() {
         batch.dispose();
         shapeRenderer.dispose();
+
+        if (font != null) { //dispose font
+            font.dispose();
+        }
     }
 
     /*loads your level map and creates new jbump world**/
     public void loadLevel(){
+        npc = null;
         String mapPath = null;
         switch (currentLevel) {
             case 0:
@@ -182,8 +309,15 @@ public class TransformationGame extends ApplicationAdapter {
         float spawnY = spawn.getProperties().get("y", Float.class);
         //float correctedY = mapHeight - spawnY - myPlayer.getHeight();
 
-        myPlayer.x = spawnX;
-        myPlayer.y = spawnY;
+        // spawn player on top of stairs
+        if (currentLevel == 0) {
+            myPlayer.x = 421.7f;
+            myPlayer.y = 364f;
+        } else {
+            myPlayer.x = spawnX;
+            myPlayer.y = spawnY;
+
+        }
 
 
         //creating our physics engine object
@@ -203,131 +337,168 @@ public class TransformationGame extends ApplicationAdapter {
         }
     }
 
-    public void checkLevel0Conditions(Physics physics){
-
-        if ((myPlayer.x <= 500) && (myPlayer.x >= 455) && (myPlayer.y<= 65)){
+    public void checkLevel0Conditions(Physics physicsEngine){
+        if ((myPlayer.x <= 500) && (myPlayer.x >= 455) && (myPlayer.y <= 65)){
             if (Gdx.input.isKeyPressed(Input.Keys.U)){
-                physics.world.update(
-                    myPlayer.hitbox,
-                    421.7f,
-                    364f,
-                    myPlayer.getWidth(),
-                    myPlayer.getHeight()
-                );
-                // 2. Synchronize the Player's visual coordinates
+                physicsEngine.world.update(myPlayer.hitbox, 421.7f, 364f, myPlayer.getWidth(), myPlayer.getHeight());
                 myPlayer.x = 421.7f;
                 myPlayer.y = 364f;
             }
-
         }
         if ((myPlayer.x <= 482) && (myPlayer.x >= 412) && (myPlayer.y > 300)){
             if (Gdx.input.isKeyPressed(Input.Keys.J)){
-                physics.world.update(
-                    myPlayer.hitbox,
-                    472f,
-                    65f,
-                    myPlayer.getWidth(),
-                    myPlayer.getHeight()
-                );
-                // 2. Synchronize the Player's visual coordinates
+                physicsEngine.world.update(myPlayer.hitbox, 472f, 65f, myPlayer.getWidth(), myPlayer.getHeight());
                 myPlayer.x = 472f;
                 myPlayer.y = 65f;
             }
-
         }
+
         if (myPlayer.y > 300){
             if (myPlayer.x < 349) {
-                currentLevel = 1;
-                loadLevel();
-                return;
+                startTransition(1);
             }
             if (myPlayer.x > 510) {
-                currentLevel = 2;
-                loadLevel();
-                return;
+                startTransition(2);
             }
         }
+
         if (myPlayer.y <= 65){
             if(myPlayer.x < 380){
-                System.out.println("Level 3");
-                return;
+                // Bump player right so they don't infinitely trigger Level 3
+                myPlayer.x = 385;
+                physicsEngine.world.update(myPlayer.hitbox, myPlayer.x, myPlayer.y, myPlayer.getWidth(), myPlayer.getHeight());
+                startTransition(3);
             }
             if (myPlayer.x >= 610){
-                System.out.println("Level 4");
+                // Bump player left so they don't infinitely trigger Level 4
+                myPlayer.x = 600;
+                physicsEngine.world.update(myPlayer.hitbox, myPlayer.x, myPlayer.y, myPlayer.getWidth(), myPlayer.getHeight());
+                startTransition(4);
             }
         }
     }
 
     public void checkLevel1Conditions(){
-        // retrieve the bottle and fuel form instances from the factory
         BottleForm bottle = (BottleForm) FormFactory.get("BottleForm");
         FuelForm fuel = (FuelForm) FormFactory.get("FuelForm");
 
-        // exit if the bottle instance is missing
-        if (bottle == null) return;
+        // Exit if either form is missing to prevent NullPointerExceptions
+        if (bottle == null || fuel == null) return;
 
         NPC1 npc1 = (NPC1) npc;
         // if the bottle is not broken then
         if (!bottle.isBroken) {
 
-            // if npc is not at target then check if bottle is on the ground (breaks on ground), if so move npc
-            if ((npc1.targetX != -1) && (bottle.isTouchingGround(myPlayer, myPhysics))) {
-                // position and trigger the glass breaking particle effect
+            // Removed targetX restriction so NPC always investigates
+            if (bottle.isTouchingGround(myPlayer, myPhysics)) {
                 particleEffect.setPosition(bottle.x, bottle.y + 20);
                 particleEffect.start();
 
-                // update npc target coordinates and switch state to walking
                 npc1.targetX = bottle.x;
                 npc1.state = NPC1.State.WALKING;
 
-                // remove the physical hitbox and clear the sprite for the bottle
                 myPhysics.world.remove(HitboxFactory.getHitbox("BottleForm"));
                 bottle.sprite = null;
             }
         }
 
-        // if the fuel bottle is not broken yet then check for collisions
         if (!fuel.isBroken){
             fuel.checkHitNpc(myPlayer, myPhysics);
 
-            // handle logic for when the fuel bottle breaks upon impact
+            if (!fuel.isBroken) // only check floor if NPC wasn't hit
+                fuel.isTouchingGround(myPlayer, myPhysics);
+
             if (fuel.isBroken){
-                // play breaking effect and set the npc status to wet
                 particleEffect.setPosition(fuel.x, fuel.y + 20);
                 particleEffect.start();
-                npc1.setWet(true);
 
-                // remove the fuel hitbox from the physics world and clear its sprite
+                //wet the NPC ONLY if the fuel hit him
+                if (fuel.brokenOnNPC) {
+                    npc1.setWet(true);
+                }
+
                 myPhysics.world.remove(HitboxFactory.getHitbox("FuelForm"));
                 fuel.sprite = null;
             }
+
         }
 
-        // check if the player is currently in the stove form
         if (myPlayer.currForm.formName.equals("StoveForm")){
-
             StoveForm stove = (StoveForm) myPlayer.currForm;
 
-            // handle the stove door state and input
             if (!stove.doorOpen) {
-                // notify player to open the door and check for key press
                 System.out.println("O for Open");
                 if (Gdx.input.isKeyJustPressed(Input.Keys.O))
                     stove.openStove();
             }
             else{
-                // if the conditions are met allow the player to ignite the fuel
                 if (bottle.isBroken && npc1.wet){
-                    // notify player to fire and check for key press
                     System.out.println("Press F to FiRe!!!!");
                     if (Gdx.input.isKeyJustPressed(Input.Keys.F)) {
-                        // set the fire target location and activate the fire state
                         stove.fireTargetx = bottle.x;
                         stove.setFire(true);
                     }
                 }
             }
+        }
+    }
 
+    public void checkLevel1Fail() {
+        FuelForm fuel = (FuelForm) FormFactory.get("FuelForm");
+        BottleForm bottle = (BottleForm) FormFactory.get("BottleForm");
+        StoveForm stove = (StoveForm) FormFactory.get("StoveForm");
+
+        if (fuel == null || bottle == null) {
+            System.out.println("FAIL CHECK: fuel=" + fuel + " bottle=" + bottle);
+            return;
+        }
+
+        NPC1 npc1 = (NPC1) npc;
+
+        // Debug print (optional)
+        System.out.println("fuel.isBroken=" + fuel.isBroken
+            + " | npc1.wet=" + npc1.wet
+            + " | npc1.pos.x=" + npc1.pos.x
+            + " | currForm=" + myPlayer.currForm.formName);
+
+        // 1. Fuel wasted? (broke on ground, not directly on NPC)
+        if (fuel.isBroken && !fuel.brokenOnNPC) {
+            float dist = Math.abs(fuel.x - npc1.pos.x);
+
+            if (dist > SPLASH_RADIUS) {
+                // Too far – mission fails
+                triggerFail("The fuel bottle smashed on the floor!\nHe needs to be soaked to catch fire.");
+                return;
+            } else {
+                // Close enough – splash the NPC and keep going
+                if (!npc1.wet) {
+                    npc1.setWet(true);
+                }
+                // Do NOT fail – the level can still be won
+            }
+        }
+
+        // 2. Bottle too far from the stove? (original check)
+        if (bottle.isBroken && stove != null && !npc1.wet) {
+            float bottleToStoveDist = Math.abs(bottle.x - stove.x);
+            if (npc1.state == NPC1.State.STANDING && bottleToStoveDist > 300f) {
+                triggerFail("The bottle was too far from the stove!\nThe person investigated but smelled nothing.");
+                return;
+            }
+        }
+
+        // 3. Fire missed the NPC? (now checks actual flame rectangle)
+        if (myPlayer.currForm.formName.equals("StoveForm")) {
+            stove = (StoveForm) myPlayer.currForm;
+            if (stove.fire && stove.stateTime > 1.0f) {
+                if (!isNpcInFlame(stove, npc1)) {
+                    triggerFail("The fire missed the house memebr!\nHe wasn't standing close enough.");
+                    return;
+                } else {
+                    // NPC caught in the fire – level complete!
+                    triggerWin("The person went up in flames!\nVengeance is sweet.");
+                }
+            }
         }
     }
 
@@ -472,6 +643,212 @@ public class TransformationGame extends ApplicationAdapter {
         }
 
         batch.end();
+    }
+
+    private void startTransition(int level) {
+        targetLevel = level;
+        transitionTimer = 2.0f; // Displays the screen for 2 seconds
+        gameState = GameState.TRANSITION;
+    }
+
+    private void drawTransitionScreen() {
+        OrthographicCamera hudCamera = new OrthographicCamera();
+        hudCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        int screenWidth = Gdx.graphics.getWidth();
+        int screenHeight = Gdx.graphics.getHeight();
+
+        // Draw a solid black background for the cutscene
+        shapeRenderer.setProjectionMatrix(hudCamera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(Color.BLACK);
+        shapeRenderer.rect(0, 0, screenWidth, screenHeight);
+        shapeRenderer.end();
+
+        // Determine what text to show based on the level
+        String mainText = "";
+        String subText = "";
+
+        if (targetLevel == 1 || targetLevel == 2) {
+            mainText = "ENTERING LEVEL " + targetLevel;
+            subText = "Get Ready...";
+        } else {
+            mainText = "LEVEL " + targetLevel;
+            subText = "Coming Soon!";
+        }
+
+        batch.setProjectionMatrix(hudCamera.combined);
+        batch.begin();
+        font.setColor(Color.WHITE);
+        font.getData().setScale(3.0f);
+
+        // Draw the text roughly in the center
+        font.draw(batch, mainText, screenWidth * 0.38f, screenHeight * 0.55f);
+
+        font.getData().setScale(1.5f);
+        font.setColor(Color.YELLOW);
+        font.draw(batch, subText, screenWidth * 0.4f, screenHeight * 0.42f);
+
+        batch.end();
+        font.setColor(Color.WHITE); // reset color
+    }
+
+    // Helper method to draw text with a black outline for better legibility
+    private void drawOutlinedText(SpriteBatch batch, BitmapFont font, String text, float x, float y, Color mainColor) {
+        // Draw the black outline by offsetting the text 2 pixels in every direction
+        font.setColor(Color.BLACK);
+        font.draw(batch, text, x - 2, y); // left
+        font.draw(batch, text, x + 2, y); // right
+        font.draw(batch, text, x, y - 2); // down
+        font.draw(batch, text, x, y + 2); // up
+
+        // Draw the actual colored text on top
+        font.setColor(mainColor);
+        font.draw(batch, text, x, y);
+    }
+
+    private void drawLevelInfoScreen() {
+        OrthographicCamera hudCamera = new OrthographicCamera();
+        hudCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        int screenWidth = Gdx.graphics.getWidth();
+        int screenHeight = Gdx.graphics.getHeight();
+        shapeRenderer.setProjectionMatrix(hudCamera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(Color.BLACK);
+        shapeRenderer.rect(0, 0, screenWidth, screenHeight);
+        shapeRenderer.end();
+        batch.setProjectionMatrix(hudCamera.combined);
+        batch.begin();
+        font.setColor(Color.WHITE);
+        font.getData().setScale(1.5f);
+        if (currentLevel == 1) {
+            font.draw(batch, "LEVEL 1 MISSION", screenWidth * 0.35f, screenHeight * 0.8f);
+            font.getData().setScale(1.2f);
+            font.setColor(Color.YELLOW);
+            font.draw(batch, "- Use the table to get to the bottle.", screenWidth * 0.1f, screenHeight * 0.6f);
+            font.draw(batch, "- Get the NPC to the stove.", screenWidth * 0.1f, screenHeight * 0.5f);
+            font.draw(batch, "- Drench him with the petrol bottle.", screenWidth * 0.1f, screenHeight * 0.4f);
+            font.draw(batch, "- Open and fire on the stove.", screenWidth * 0.1f, screenHeight * 0.3f);
+            font.draw(batch, "- Press E to transform into objects.", screenWidth * 0.1f, screenHeight * 0.2f);
+        } else if (currentLevel == 2) {
+            font.draw(batch, "LEVEL 2 MISSION", screenWidth * 0.35f, screenHeight * 0.8f);
+            font.getData().setScale(1.2f);
+            font.setColor(Color.YELLOW);
+            font.draw(batch, "- Defeat the NPC using the environment.", screenWidth * 0.1f, screenHeight * 0.6f);
+            font.draw(batch, "- Press E to transform into objects.", screenWidth * 0.1f, screenHeight * 0.5f);
+        }
+        font.getData().setScale(1f);
+        font.setColor(Color.LIGHT_GRAY);
+        font.draw(batch, "Press ENTER to start...", screenWidth * 0.35f, screenHeight * 0.1f);
+        batch.end();
+    }
+
+    public void triggerFail(String reason) {
+        failReason = reason;
+        gameState = GameState.FAILED;
+    }
+
+    public void triggerWin(String message) {
+        winMessage = message;
+        gameState = GameState.WIN;
+    }
+
+    private void drawWinScreen() {
+        OrthographicCamera hudCamera = new OrthographicCamera();
+        hudCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        int screenWidth = Gdx.graphics.getWidth();
+        int screenHeight = Gdx.graphics.getHeight();
+
+        // Green translucent overlay
+        Gdx.gl.glEnable(Gdx.gl.GL_BLEND);
+        Gdx.gl.glBlendFunc(Gdx.gl.GL_SRC_ALPHA, Gdx.gl.GL_ONE_MINUS_SRC_ALPHA);
+
+        shapeRenderer.setProjectionMatrix(hudCamera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(new Color(0.0f, 0.3f, 0.0f, 0.8f)); // dark green
+        shapeRenderer.rect(0, 0, screenWidth, screenHeight);
+        shapeRenderer.end();
+
+        Gdx.gl.glDisable(Gdx.gl.GL_BLEND);
+
+        batch.setProjectionMatrix(hudCamera.combined);
+        batch.begin();
+
+        // Main WIN text
+        font.getData().setScale(3.0f);
+        drawOutlinedText(batch, font, "LEVEL COMPLETE!", screenWidth * 0.3f, screenHeight * 0.7f, Color.GREEN);
+
+        // Custom message
+        font.getData().setScale(1.5f);
+        drawOutlinedText(batch, font, winMessage, screenWidth * 0.25f, screenHeight * 0.5f, Color.WHITE);
+
+        // Return to hub instruction
+        font.getData().setScale(1.2f);
+        drawOutlinedText(batch, font, "Press ENTER to return to hub", screenWidth * 0.33f, screenHeight * 0.35f, Color.LIGHT_GRAY);
+
+        batch.end();
+        font.getData().setScale(1f);   // reset scale
+    }
+
+    private void drawFailScreen() {
+        OrthographicCamera hudCamera = new OrthographicCamera();
+        hudCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        int screenWidth = Gdx.graphics.getWidth();
+        int screenHeight = Gdx.graphics.getHeight();
+
+        // Enable transparency for the red overlay
+        Gdx.gl.glEnable(Gdx.gl.GL_BLEND);
+        Gdx.gl.glBlendFunc(Gdx.gl.GL_SRC_ALPHA, Gdx.gl.GL_ONE_MINUS_SRC_ALPHA);
+
+        shapeRenderer.setProjectionMatrix(hudCamera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(new Color(0.3f, 0.0f, 0.0f, 0.8f)); // Dark translucent red
+        shapeRenderer.rect(0, 0, screenWidth, screenHeight);
+        shapeRenderer.end();
+
+        Gdx.gl.glDisable(Gdx.gl.GL_BLEND);
+
+        batch.setProjectionMatrix(hudCamera.combined);
+        batch.begin();
+
+        // Main FAILED text
+        font.getData().setScale(3.0f);
+        drawOutlinedText(batch, font, "MISSION FAILED", screenWidth * 0.35f, screenHeight * 0.7f, Color.RED);
+
+        // The specific reason you passed into triggerFail()
+        font.getData().setScale(1.5f);
+        drawOutlinedText(batch, font, failReason, screenWidth * 0.25f, screenHeight * 0.5f, Color.WHITE);
+
+        // Restart Instructions
+        font.getData().setScale(1.2f);
+        drawOutlinedText(batch, font, "Press R to Restart Level", screenWidth * 0.38f, screenHeight * 0.35f, Color.LIGHT_GRAY);
+
+        batch.end();
+
+        // Reset scale for the rest of the game
+        font.getData().setScale(1f);
+    }
+
+    private boolean isNpcInFlame(StoveForm stove, NPC1 npc1) {
+        // Flame rectangle (same as draw() in StoveForm)
+        float flameX = stove.x + stove.flameOffsetX;
+        float flameY = stove.y + stove.flameOffsetY;
+        float flameW = stove.flameWidth;
+        float flameH = stove.flameHeight;
+
+        // NPC hitbox (same as in NPC1 constructor)
+        float npcX = npc1.pos.x + npc1.hitboxOffsetX;
+        float npcY = npc1.pos.y + npc1.hitboxOffsetY;
+        float npcW = npc1.hitboxWidth;
+        float npcH = npc1.hitboxHeight;
+
+        // AABB overlap test
+        return flameX < npcX + npcW
+            && flameX + flameW > npcX
+            && flameY < npcY + npcH
+            && flameY + flameH > npcY;
     }
 }
 

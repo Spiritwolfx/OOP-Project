@@ -10,6 +10,7 @@ import com.dongbat.jbump.Response;
 public class FuelForm extends MimicForm {
 
     public boolean isBroken = false; // is the bottle broken or not
+    public boolean brokenOnNPC = false;
 
     public FuelForm(String name, float x, float y, float width, float height) {
         this.formName = name;
@@ -18,7 +19,7 @@ public class FuelForm extends MimicForm {
         this.width = width;
         this.height = height;
         this.speed = 200f ;
-        this.weight = 1200f;
+        this.weight = 1000f;
         this.textureName = "Assets/Assets/FuelBottle.png";
         loadSprite();
     }
@@ -58,7 +59,8 @@ public class FuelForm extends MimicForm {
         Response.Result check = physics.world.check(
             HitboxFactory.getHitbox(this.formName),
             this.x,
-            this.y - 1, // Checking downwards
+//            this.y - 1, // Checking downwards
+            y,
             physics.heistFilter
         );
 
@@ -74,6 +76,7 @@ public class FuelForm extends MimicForm {
 
                 this.speed = 0f;    // stop the bottle
                 this.isBroken = true;
+                this.brokenOnNPC = true;
                 player.changeForm("BaseForm",physics);
 
             }

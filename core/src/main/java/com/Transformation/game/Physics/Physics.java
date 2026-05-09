@@ -27,7 +27,7 @@ public class Physics {
             if (item.userData.equals("NPC")) return null;
 
             if(item.userData.equals("BottleForm") || item.userData.equals("FuelForm"))
-                if (other.userData.equals("NPC")) return Response.slide;
+                if (other.userData.equals("NPC")) return null;
 
             if ( (other.userData.equals("BaseForm")) ||  (other.userData.equals("NPC"))
                 || (other.userData.equals("HairDryerForm")))

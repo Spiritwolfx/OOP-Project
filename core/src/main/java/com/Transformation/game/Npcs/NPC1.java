@@ -14,6 +14,12 @@ public class NPC1 extends NPC{
     public State state = State.IDLE;
 
     public float targetX;
+
+    public float hitboxOffsetX;
+    public float hitboxOffsetY;
+    public float hitboxWidth;
+    public float hitboxHeight;
+
     private Animation<TextureRegion> walkAnim;
     private Animation<TextureRegion> idleAnim;
 
@@ -25,6 +31,11 @@ public class NPC1 extends NPC{
     // constructor that makes our animations as well
     public NPC1(float x, float y, String walkFile, String idleFile, Physics physics) {
         this.pos = new Vector2(x, y);
+
+        this.hitboxOffsetX = 15;
+        this.hitboxOffsetY = 0;
+        this.hitboxWidth   = 60;
+        this.hitboxHeight  = 143;
 
         // loading our animations frames image
         Texture sheet = new Texture(walkFile);
@@ -61,11 +72,11 @@ public class NPC1 extends NPC{
         // finally IDLE animation done as well
         this.idleAnim = new Animation<>(0.5f, frames);
 
-        physics.world.add(this.hitbox, pos.x - 20 , pos.y , 60, 143);
+        physics.world.add(this.hitbox, pos.x + hitboxOffsetX , pos.y + hitboxOffsetY, hitboxWidth, hitboxHeight);
     }
 
     /** handles npc movememnt */
-    public void update(float delta, Physics phsyics) {
+    public void update(float delta, Physics phyics) {
         stateTime += delta;
 
         if (state == State.WALKING && targetX != -1) {
@@ -81,7 +92,7 @@ public class NPC1 extends NPC{
             }
 
             //move hitbox
-            phsyics.world.move(this.hitbox,pos.x - 20 , pos.y , phsyics.heistFilter);
+            phyics.world.move(this.hitbox,pos.x - 20 , pos.y , phyics.heistFilter);
         }
     }
 

@@ -11,8 +11,14 @@ public class StoveForm extends MimicForm {
     public boolean doorOpen = false;
     public boolean fire = false;
     public float fireTargetx;
+    public float stateTime = 0;
+    public int flameOffsetX;
+    public int flameOffsetY;
+    public int flameWidth;
+    public int flameHeight;
+
     private Animation<TextureRegion> fireAnim;
-    private float stateTime = 0;
+
 
     public StoveForm(String name, float x, float y, float width, float height) {
         this.formName = name;
@@ -22,6 +28,12 @@ public class StoveForm extends MimicForm {
         this.height = height;
         this.speed = 0f;
         this.weight = 700000f;
+
+        // In StoveForm constructor (or wherever you like)
+        this.flameOffsetX = 70;     // move it to the right
+        this.flameOffsetY = -20;    // move it up / down
+        this.flameWidth   = 100;    // wider fire
+        this.flameHeight  = 150;    // taller fire
 
         // loading our animations frames image
         Texture sheet = new Texture("fire.png");
@@ -71,7 +83,7 @@ public class StoveForm extends MimicForm {
             TextureRegion frame = fireAnim.getKeyFrame(stateTime, true);
 
             // draw the animation frame at the specified offset and scale
-            batch.draw(frame, x + 30, y - 50, 150, 256);
+            batch.draw(frame, x + flameOffsetX, y + flameOffsetY, flameWidth, flameHeight);
         }
     }
 

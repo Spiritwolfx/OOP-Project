@@ -48,7 +48,15 @@ public class FormFactory {
     }
 
     public static MimicForm get(String formName) {
-        return registry.getOrDefault(formName, new BaseForm());
+//        return registry.getOrDefault(formName, new BaseForm());
+        // BaseForm is the player's default state (not on the map),
+        // so we must explicitly return it whenever it's requested.
+        if (formName.equals("BaseForm")) {
+            return new BaseForm();
+        }
+
+        // For all other forms, return the map registry item (or null if it's broken/missing)
+        return registry.get(formName);
     }
 }
 
