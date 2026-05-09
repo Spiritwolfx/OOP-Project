@@ -47,12 +47,12 @@
    eJzF1ssVwVAAhOErskgBStAA4v0KgngslKAEBVgoQAlKUIIClKAEJVj6p4k7c86//raThRBaSQht6lBOXepRnwY0pBGNaUJTmtGcClrQklZU0po2tKWKdrSnAx0pwyxD/Mm8GVyZL4Mr82dwZea1+K7Mi8GV+TS4Mr8GV2Yzie/KPBtcmQ+DK/NjcGU26vFdmSeDK/NucGW+Da7MNI3vyiwMrsxrGv/nyPwD014gtQ==
   </data>
  </layer>
- <objectgroup id="5" name="Collision Layer" visible="0" locked="1">
+ <objectgroup id="5" name="Collision Layer">
   <object id="10" x="0" y="0" width="480" height="16"/>
   <object id="11" x="464" y="16" width="16" height="304"/>
   <object id="13" x="0" y="275.886" width="464" height="44.1136"/>
   <object id="14" x="0" y="16" width="16" height="288"/>
-  <object id="23" x="349" y="224.333" width="0.666667" height="51.3333"/>
+  <object id="23" x="349" y="224.333" width="2.66667" height="49.5151"/>
  </objectgroup>
  <objectgroup id="6" name="spawn" visible="0" locked="1">
   <object id="16" x="48" y="256">

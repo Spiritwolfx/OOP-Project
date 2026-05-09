@@ -229,12 +229,7 @@ public class Physics {
             }
             return null;
         }
-        // if cabinet door is open, cannot turn into cabinet but can turn into hairdryer
-        else if ((currentLevel == 2) && closestForm.equals("CabinetForm")){
-            if (((CabinetForm) FormFactory.get("CabinetForm")).doorOpen){
-                return "HairDryerForm";
-            }
-        }
+
         return closestForm;
     }
 }
