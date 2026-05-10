@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -56,10 +57,16 @@ public class TransformationGame extends ApplicationAdapter {
     private int targetLevel = -1;
     private float transitionTimer = 0f;
 
+    private float level2Timer = 40f; // 60 second countdown
+    private float shockDelay = 3f;    // seconds to wait after shock
+    private float shockTimer = 0f;    // counts up after shock
+
     private String failReason = "";
     private String winMessage = "";
 
     private BitmapFont font;
+
+    private OrthographicCamera hudCamera;
 
     private static final float SPLASH_RADIUS = 80f;   // pixels – how close the fuel must land to the NPC
 
@@ -70,6 +77,11 @@ public class TransformationGame extends ApplicationAdapter {
         font = new BitmapFont(); // font loader
 
         camera = new OrthographicCamera();
+
+        hudCamera = new OrthographicCamera();
+        hudCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        hudCamera.update();
+
         currentLevel = 0;
         loadLevel();
 
@@ -143,6 +155,8 @@ public class TransformationGame extends ApplicationAdapter {
                 break;
             case 2:
                 checkLevel2Conditions();
+                checkLevel2Fail();
+                checkLevel2Win();
                 break;
             case 3:
                 System.out.println("Level 3");
@@ -226,10 +240,79 @@ public class TransformationGame extends ApplicationAdapter {
                 font.getData().setScale(1f); // reset
             }
         }
+
+
         if (currentLevel == 1 || currentLevel == 2)
             particleEffect.draw(batch);
         batch.end();
 
+        // --- HUD drawing (screen space) ---
+        hudCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        hudCamera.update();
+
+        float screenWidth  = Gdx.graphics.getWidth();
+        float screenHeight = Gdx.graphics.getHeight();
+        float refHeight = 720f;                           // [CHANGE] base resolution for scaling, increase = bigger text
+        float fontScale = screenHeight / refHeight;       // dynamic scale factor (keep this formula)
+
+        // 1. Timer background box (top‑right)
+        if (currentLevel == 2) {
+            // [CHANGE] box dimensions relative to screen
+            float boxW = screenWidth * 0.21f;              // width: 25% of screen width
+            float boxH = screenHeight * 0.05f;            // height: 5% of screen height
+            float boxX = screenWidth - boxW - screenWidth * 0.02f; // X: 2% margin from right
+            float boxY = screenHeight - boxH - screenHeight * 0.02f; // Y: 2% margin from top
+
+            shapeRenderer.setProjectionMatrix(hudCamera.combined);
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            shapeRenderer.setColor(new Color(0, 0, 0, 0.5f));
+            shapeRenderer.rect(boxX, boxY, boxW, boxH);
+            shapeRenderer.end();
+        }
+
+        // 2. HUD text
+        batch.setProjectionMatrix(hudCamera.combined);
+        batch.begin();
+
+        if (currentLevel == 2) {
+            // ---- Timer text (inside the box) ----
+            String timerText = "Time: " + (int) level2Timer + "s";
+            GlyphLayout layout = new GlyphLayout(font, timerText);
+            Color timerColor = level2Timer <= 10 ? Color.RED : Color.WHITE;
+            font.setColor(timerColor);
+
+            font.getData().setScale(fontScale * 2.4f);     // [CHANGE] multiplier adjusts timer size
+
+            // [CHANGE] text position
+            float timerTextX = screenWidth - screenWidth * 0.1f - layout.width; // X: right‑aligned
+            float timerTextY = screenHeight - screenHeight * 0.03f;              // Y: down from top edge
+
+            font.draw(batch, timerText, timerTextX, timerTextY);
+            font.setColor(Color.WHITE);
+
+            // ---- hints ----
+            font.getData().setScale(fontScale * 2f);     // [CHANGE] multiplier for hint size (0.7 = relatively smaller)
+
+            float hintX = screenWidth * 0.02f;             // [CHANGE] horizontal position (2% from left)
+            float hintY = screenHeight * 0.1f;            // [CHANGE] vertical position (4% from top)
+
+            if (myPlayer.currForm.formName.equals("CabinetForm")) {
+                CabinetForm cabinet = (CabinetForm) myPlayer.currForm;
+                if (!cabinet.doorOpen) {
+                    drawOutlinedText(batch, font, "Press O to Open", hintX, hintY, Color.WHITE);
+                }
+            } else if (myPlayer.currForm.formName.equals("HairDryerForm")) {
+                HairDryerForm dryer = (HairDryerForm) myPlayer.currForm;
+                if (!dryer.isStart) {
+                    drawOutlinedText(batch, font, "Press S to Start", hintX, hintY, Color.WHITE);
+                }
+            }
+            font.getData().setScale(1f); // reset
+        }
+        batch.end();
+
+        // Reset back to world camera for debug shapes
+        batch.setProjectionMatrix(camera.combined);
         //showing all rectangles and other shapes in tiled vs in jbump
         showTiledShapes();
         showJbumpWorld();
@@ -266,6 +349,9 @@ public class TransformationGame extends ApplicationAdapter {
 
                 // the second argument is the directory where the 'particle.png' is located
                 particleEffect.load(Gdx.files.internal("water_splash.p"), Gdx.files.internal(""));
+
+                level2Timer = 40f;
+                shockTimer = 0f;
                 break;
             case 3:
                 mapPath = "Assets/Assets/game_level_3.tmx";
@@ -492,7 +578,7 @@ public class TransformationGame extends ApplicationAdapter {
             stove = (StoveForm) myPlayer.currForm;
             if (stove.fire && stove.stateTime > 1.0f) {
                 if (!isNpcInFlame(stove, npc1)) {
-                    triggerFail("The fire missed the house memebr!\nHe wasn't standing close enough.");
+                    triggerFail("The fire missed the house member!\nHe wasn't standing close enough.");
                     return;
                 } else {
                     // NPC caught in the fire – level complete!
@@ -549,6 +635,38 @@ public class TransformationGame extends ApplicationAdapter {
 
 
 
+    }
+
+    public void checkLevel2Fail() {
+        HairDryerForm dryer = (HairDryerForm) FormFactory.get("HairDryerForm");
+        if (dryer == null) return;
+
+        NPC2 npc2 = (NPC2) npc;
+
+        // countdown timer
+        level2Timer -= Gdx.graphics.getDeltaTime();
+        if (level2Timer <= 0f && !npc2.shocked) {
+            triggerFail("You ran out of time!\nThe person woke up before you could act.");
+            return;
+        }
+
+        // fail if dryer was dropped in tub but wasn't turned on first
+        if (dryer.sprite == null && !npc2.shocked && !dryer.isStart) {
+            triggerFail("The hair dryer wasn't turned on!\nPress S before dropping it in the tub.");
+            return;
+        }
+    }
+
+    public void checkLevel2Win() {
+        NPC2 npc2 = (NPC2) npc;
+        if (npc2.shocked) {
+            shockTimer += Gdx.graphics.getDeltaTime();
+            if (shockTimer >= shockDelay) {
+                triggerWin("The person got fried in the bathtub!\nVengeance has been served.");
+            }
+        } else {
+            shockTimer = 0f;   // safety reset if shock is ever undone
+        }
     }
 
     /** to view tiled rectangles */
@@ -652,8 +770,8 @@ public class TransformationGame extends ApplicationAdapter {
     }
 
     private void drawTransitionScreen() {
-        OrthographicCamera hudCamera = new OrthographicCamera();
         hudCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        hudCamera.update();
 
         int screenWidth = Gdx.graphics.getWidth();
         int screenHeight = Gdx.graphics.getHeight();
@@ -710,6 +828,7 @@ public class TransformationGame extends ApplicationAdapter {
     private void drawLevelInfoScreen() {
         OrthographicCamera hudCamera = new OrthographicCamera();
         hudCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        hudCamera.update();
         int screenWidth = Gdx.graphics.getWidth();
         int screenHeight = Gdx.graphics.getHeight();
         shapeRenderer.setProjectionMatrix(hudCamera.combined);
@@ -723,7 +842,7 @@ public class TransformationGame extends ApplicationAdapter {
         font.getData().setScale(1.5f);
         if (currentLevel == 1) {
             font.draw(batch, "LEVEL 1 MISSION", screenWidth * 0.35f, screenHeight * 0.8f);
-            font.getData().setScale(1.2f);
+            font.getData().setScale(1.6f);
             font.setColor(Color.YELLOW);
             font.draw(batch, "- Use the table to get to the bottle.", screenWidth * 0.1f, screenHeight * 0.6f);
             font.draw(batch, "- Get the NPC to the stove.", screenWidth * 0.1f, screenHeight * 0.5f);
@@ -732,12 +851,12 @@ public class TransformationGame extends ApplicationAdapter {
             font.draw(batch, "- Press E to transform into objects.", screenWidth * 0.1f, screenHeight * 0.2f);
         } else if (currentLevel == 2) {
             font.draw(batch, "LEVEL 2 MISSION", screenWidth * 0.35f, screenHeight * 0.8f);
-            font.getData().setScale(1.2f);
+            font.getData().setScale(1.6f);
             font.setColor(Color.YELLOW);
-            font.draw(batch, "- Defeat the NPC using the environment.", screenWidth * 0.1f, screenHeight * 0.6f);
+            font.draw(batch, "- Kill the person using the environment.", screenWidth * 0.1f, screenHeight * 0.6f);
             font.draw(batch, "- Press E to transform into objects.", screenWidth * 0.1f, screenHeight * 0.5f);
         }
-        font.getData().setScale(1f);
+        font.getData().setScale(1.7f);
         font.setColor(Color.LIGHT_GRAY);
         font.draw(batch, "Press ENTER to start...", screenWidth * 0.35f, screenHeight * 0.1f);
         batch.end();
@@ -756,6 +875,7 @@ public class TransformationGame extends ApplicationAdapter {
     private void drawWinScreen() {
         OrthographicCamera hudCamera = new OrthographicCamera();
         hudCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        hudCamera.update();
 
         int screenWidth = Gdx.graphics.getWidth();
         int screenHeight = Gdx.graphics.getHeight();
@@ -794,6 +914,7 @@ public class TransformationGame extends ApplicationAdapter {
     private void drawFailScreen() {
         OrthographicCamera hudCamera = new OrthographicCamera();
         hudCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        hudCamera.update();
 
         int screenWidth = Gdx.graphics.getWidth();
         int screenHeight = Gdx.graphics.getHeight();
