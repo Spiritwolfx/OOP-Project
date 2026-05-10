@@ -2,8 +2,8 @@ package com.Transformation.game.Forms;
 
 import com.Transformation.game.Player;
 
-public class TestForm extends MimicForm {
-    public TestForm(String name, float x, float y, float width, float height) {
+public class TableForm extends MimicForm {
+    public TableForm(String name, float x, float y, float width, float height) {
         this.formName = name;
         this.x = x;
         this.y = y;

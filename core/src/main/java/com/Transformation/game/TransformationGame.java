@@ -174,15 +174,21 @@ public class TransformationGame extends ApplicationAdapter {
         renderMap();
 
         batch.begin();
-        if (npc != null)
+        if (npc != null) {
+            if (currentLevel == 1){
+                TableForm table = (TableForm) FormFactory.get("TableForm");
+                table.draw(batch);
+            }
             npc.draw(batch);
+        }
 //        for (MimicForm transformable : FormFactory.getAllForms()){
 //            transformable.draw(batch);
 //        }
         for (MimicForm transformable : FormFactory.getAllForms()){
             // Only draw if the sprite exists to prevent crashes
             if (transformable.sprite != null) {
-                transformable.draw(batch);
+                if (!transformable.formName.equals("TableForm")) // skip table
+                    transformable.draw(batch);
             }
         }
 

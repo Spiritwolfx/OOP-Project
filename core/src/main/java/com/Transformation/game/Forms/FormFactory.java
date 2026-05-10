@@ -17,8 +17,8 @@ public class FormFactory {
         for (PropInstance prop : propsFromTiled) {
             MimicForm newForm = null;
 
-            if (prop.name.equals("Box")) {
-                newForm = new TestForm(prop.name, prop.x, prop.y, prop.width, prop.height);
+            if (prop.name.equals("TableForm")) {
+                newForm = new TableForm(prop.name, prop.x, prop.y, prop.width, prop.height);
             }
             if (prop.name.equals("BottleForm")) {
                 newForm = new BottleForm(prop.name, prop.x, prop.y, prop.width, prop.height);

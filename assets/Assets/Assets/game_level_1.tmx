@@ -55,13 +55,13 @@
   <object id="17" x="0" y="2.66667" width="16" height="316"/>
   <object id="48" x="156" y="116.364" width="81.6364" height="4.72727"/>
  </objectgroup>
- <objectgroup id="5" name="Transformables" visible="0" locked="1">
+ <objectgroup id="5" name="Transformables">
   <properties>
    <property name="formName" value="Box"/>
   </properties>
   <object id="18" x="272" y="206" width="95.3334" height="64">
    <properties>
-    <property name="formName" value="Box"/>
+    <property name="formName" value="TableForm"/>
    </properties>
   </object>
   <object id="45" x="160.08" y="87.3295" width="12.3636" height="26.8182">
