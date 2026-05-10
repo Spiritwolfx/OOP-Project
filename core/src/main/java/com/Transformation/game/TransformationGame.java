@@ -314,8 +314,8 @@ public class TransformationGame extends ApplicationAdapter {
         // Reset back to world camera for debug shapes
         batch.setProjectionMatrix(camera.combined);
         //showing all rectangles and other shapes in tiled vs in jbump
-        showTiledShapes();
-        showJbumpWorld();
+        //showTiledShapes();
+        //showJbumpWorld();
     }
 
     @Override
