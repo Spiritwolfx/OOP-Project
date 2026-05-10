@@ -25,8 +25,8 @@
  <objectgroup id="10" name="HideTransformables" visible="0" locked="1">
   <object id="20" gid="6922" x="242.712" y="184.121" width="25.0076" height="18.3182"/>
  </objectgroup>
- <objectgroup id="7" name="Transformables" visible="0" locked="1">
-  <object id="17" x="164.891" y="183.414" width="36.5801" height="91.8072">
+ <objectgroup id="7" name="Transformables">
+  <object id="17" x="164.891" y="183.414" width="37.1256" height="91.8072">
    <properties>
     <property name="formName" value="CabinetForm"/>
    </properties>
