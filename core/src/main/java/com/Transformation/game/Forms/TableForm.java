@@ -10,7 +10,7 @@ public class TableForm extends MimicForm {
         this.width = width;
         this.height = height;
         this.speed = 400f;
-        this.weight = 700f;
+        this.weight = 1820f;
         this.textureName = "Assets/Assets/table_rect_0.png"; // actual bench sprite
         loadSprite(); // ADD THIS
     }
