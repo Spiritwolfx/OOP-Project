@@ -22,6 +22,8 @@ public class Player {
     public float velX;
     public float velY;
 
+    private boolean facingRight = true;   // true = right, false = left
+
     //jbump item
     public Item<String> hitbox;
 
@@ -94,6 +96,11 @@ public class Player {
             velY = 400f;
         }
 
+        if (velX < 0) {
+            facingRight = false;
+        } else if (velX > 0) {
+            facingRight = true;
+        }
 
 
         // jbump handles collision — moves player to where it's allowed to go
@@ -149,7 +156,9 @@ public class Player {
     /** use in render() to draw our player */
     public void draw(SpriteBatch batch) {
         if (currForm.formName.equals("BaseForm")) {
+            sprite.setFlip(facingRight, false); //flip facing
             sprite.draw(batch); // draw ghost
+            sprite.setFlip(false, false); //cleanup
         } //else {
             //currForm.draw(batch); // draw the form's own sprite
         //}
